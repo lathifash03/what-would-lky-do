@@ -49,10 +49,10 @@ evaluation scored by an LLM is as fallible as the thing it evaluates.
 
 ```mermaid
 flowchart TD
-    A["NAS Archives Online<br/>17 records"] -->|"opened in a browser,<br/>copied by hand"| B["data/raw/*.txt<br/>(gitignored)"]
+    A["NAS Archives Online<br/>17 records collected"] -->|"opened in a browser,<br/>copied by hand"| B["data/raw/*.txt<br/>(gitignored)"]
     B --> C["src/process.py<br/>drop page furniture · normalise quotes<br/>speaker filter · strip quoted extracts"]
     C --> M["data/manifest.json<br/>(committed: metadata + sha256)"]
-    C --> D["127 chunks<br/>250 words, 40 overlap"]
+    C --> D["127 chunks from 16 documents<br/>250 words, 40 overlap<br/>(1 record held out: answer_use false)"]
     D --> E["src/embed.py<br/>text-embedding-3-small"]
     E --> F["vectors.npy<br/>(gitignored)"]
 
@@ -73,10 +73,16 @@ flowchart TD
 
 ## Corpus and provenance
 
-**17 documents**, speeches, one interview and one parliament record, from the
-National Archives of Singapore, Archives Online. **34,567 words raw → 25,747
-processed → 127 chunks** of 250 words with 40 words of overlap. Two documents are
-official translations.
+**17 documents collected, 16 indexed for answering, 127 chunks.** The
+1965-12-14 parliament record carries `answer_use: false` and is kept in the
+manifest only, so the 127 chunks come from 16 documents, not 17. Collected: 15
+speeches, one interview and one parliament record, from the National Archives of
+Singapore, Archives Online; the indexed 16 are 15 speeches and one interview.
+**34,567 words raw → 25,747 processed**, chunked at 250 words with 40 words of
+overlap. Two documents are official translations.
+
+**No memoirs, no books, no articles.** The memoirs were left out on purpose:
+they are copyrighted and cannot be redistributed.
 
 **Collection was manual, and nothing here crawls the archive.** nas.gov.sg sits
 behind a bot check that answers scripted clients — including the request for
@@ -144,7 +150,8 @@ demonstrated end to end**. See Known limitations.
 
 One real run, recorded in [eval/results.md](eval/results.md) with per-question
 detail in `eval/results.json`. Model `gpt-4.1-mini`, embeddings
-`text-embedding-3-small`, 127 chunks, abstention threshold **0.4317**.
+`text-embedding-3-small`, 127 chunks from 16 indexed documents, abstention
+threshold **0.4317**.
 
 **23 questions, reported separately because they are not comparable:**
 
@@ -331,7 +338,9 @@ I ran two Claude Code sessions on the same repo and one rebuilt work that was al
   gates. The corpus is more trustworthy and less able to answer.
 - **Persona fidelity is not measured.** Nothing tests whether the voice resembles
   his.
-- **Speeches only, English only, 17 documents.** No memoirs or books.
+- **Speeches only, English only, 17 documents collected and 16 indexed.** No
+  memoirs, books or articles; the memoirs are copyrighted and were left out on
+  purpose.
 - **Retrieval is the ceiling.** The gates verify only against what was retrieved.
 
 ## What I would change
