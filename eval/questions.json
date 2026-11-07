@@ -54,24 +54,6 @@
     "note": "Written by the model from the gold chunk. Easier than a real question."
   },
   {
-    "id": "syn-04",
-    "question": "How did the Barisan Sosialis and their publication characterize Singapore's independence and international recognition in 1965?",
-    "answerable": true,
-    "kind": "synthetic",
-    "synthetic": true,
-    "acceptable_modes": [
-      "documented"
-    ],
-    "gold_chunk_ids": [
-      "lky_1965-12-14_parliament-motion-of-thanks#0011"
-    ],
-    "gold_document_ids": [
-      "lky_1965-12-14_parliament-motion-of-thanks"
-    ],
-    "generated_by": "gpt-4.1-mini",
-    "note": "Written by the model from the gold chunk. Easier than a real question."
-  },
-  {
     "id": "syn-05",
     "question": "What are the two contrasting attitudes people can have when facing difficult challenges, as described in the passage?",
     "answerable": true,
@@ -216,60 +198,60 @@
     "note": "Written by the model from the gold chunk. Easier than a real question."
   },
   {
-    "id": "hand-01",
+    "id": "asst-01",
     "question": "What did you say about the number of homes sold and who was buying them in the Everton Park estate?",
     "answerable": true,
-    "kind": "handwritten",
+    "kind": "assistant_written",
     "gold_document_id": "lky_1965-11-08_everton-park-housing-opening",
     "note": "Housing, 1965. Written from the manifest topic, not from the chunk text.",
     "confirmed": true,
     "confirmed_by": "assistant, at the author's instruction to write these from the manifest topics"
   },
   {
-    "id": "hand-02",
+    "id": "asst-02",
     "question": "Why did you think national service mattered for a country as small as Singapore?",
     "answerable": true,
-    "kind": "handwritten",
+    "kind": "assistant_written",
     "gold_document_id": "lky_1970-08-18_safti-commissioning",
     "note": "National service, 1970 SAFTI commissioning.",
     "confirmed": true,
     "confirmed_by": "assistant, at the author's instruction to write these from the manifest topics"
   },
   {
-    "id": "hand-03",
+    "id": "asst-03",
     "question": "What role did you see for the Chinese clan associations after independence?",
     "answerable": true,
-    "kind": "handwritten",
+    "kind": "assistant_written",
     "gold_document_id": "lky_1993-12-15_chin-kang-huay-kuan-75th",
     "note": "Society and clan associations, 1993.",
     "confirmed": true,
     "confirmed_by": "assistant, at the author's instruction to write these from the manifest topics"
   },
   {
-    "id": "hand-04",
+    "id": "asst-04",
     "question": "Why should a Singaporean student keep up their Mandarin as well as English?",
     "answerable": true,
-    "kind": "handwritten",
+    "kind": "assistant_written",
     "gold_document_id": "lky_2005-06-02_keeping-my-mandarin-alive-launch",
     "note": "Language policy, 2005 book launch.",
     "confirmed": true,
     "confirmed_by": "assistant, at the author's instruction to write these from the manifest topics"
   },
   {
-    "id": "hand-05",
+    "id": "asst-05",
     "question": "What makes a leader ethical, and why does that matter to a country's competitiveness?",
     "answerable": true,
-    "kind": "handwritten",
+    "kind": "assistant_written",
     "gold_document_id": "lky_2005-04-28_ethical-leadership-kl",
     "note": "Leadership and corruption, 2005 Kuala Lumpur address.",
     "confirmed": true,
     "confirmed_by": "assistant, at the author's instruction to write these from the manifest topics"
   },
   {
-    "id": "hand-06",
+    "id": "asst-06",
     "question": "How did you feel about growing older, and about your wife's illness?",
     "answerable": true,
-    "kind": "handwritten",
+    "kind": "assistant_written",
     "gold_document_id": "lky_2010-09-01_interview-nyt-seth-mydans",
     "note": "Personal. Must be answered only from the NYT interview, never by extrapolation.",
     "confirmed": true,

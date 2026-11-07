@@ -11,6 +11,8 @@ an unknown mode fails.
 """
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass
 
 from .process import looks_like_heading
@@ -54,6 +56,37 @@ def format_failures(failures: list[Failure]) -> str:
 
 def _as_list(value) -> list:
     return value if isinstance(value, list) else []
+
+
+TRIM_MARKER = " […]"
+# Boundaries a cut may land on, best first: sentence end, then clause end.
+_BOUNDARY_RE = re.compile(r"[.!?]$|[;:,]$")
+
+
+def trim_to_limit(text: str, source: str, limit: int = MAX_QUOTE_WORDS) -> str | None:
+    """Longest prefix of `text` within `limit` words that ends at a boundary.
+
+    Returns the trimmed quote with TRIM_MARKER appended, or None if no prefix
+    within the limit ends at a sentence or clause boundary — in which case the
+    quote is not trimmed and fails the gate as before, because silently cutting
+    mid-clause would misrepresent what he said.
+
+    The returned string is NOT itself a substring of the source: the marker is
+    added to show the reader a cut was made. The caller re-verifies the text
+    without the marker.
+
+    This exists because asking the model to count words does not work. 25 of
+    the 37 first-attempt quote failures in run 1 were over the limit, and the
+    model shaved one word at a time instead of obeying. Counting is code's job.
+    """
+    words = normalize_ws(text).split()
+    if len(words) <= limit:
+        return None
+    for end in range(min(limit, len(words)), 0, -1):
+        candidate = " ".join(words[:end])
+        if _BOUNDARY_RE.search(candidate) and quote_is_grounded(candidate, source):
+            return candidate + TRIM_MARKER
+    return None
 
 
 def check_shape(answer: dict) -> list[Failure]:
@@ -140,11 +173,31 @@ def check_quotes(answer: dict, retrieved: list[dict],
             continue
         n = word_count(text)
         if n > MAX_QUOTE_WORDS:
-            out.append(Failure(
-                "quote",
-                f"{where} is {n} words, the limit is {MAX_QUOTE_WORDS}. Shorten it to the essential span.",
-            ))
-        if not quote_is_grounded(text, by_id[cid]):
+            # The model broke the limit. Record that it did, so the fix below
+            # cannot hide the failure, then try to repair it deterministically.
+            answer["_quote_limit_broken"] = True
+            if quote_is_grounded(text, by_id[cid]):
+                trimmed = trim_to_limit(text, by_id[cid])
+                if trimmed is not None:
+                    quote["text"] = trimmed
+                    answer["_auto_trimmed"] = answer.get("_auto_trimmed", 0) + 1
+                    text = trimmed
+                else:
+                    out.append(Failure(
+                        "quote",
+                        f"{where} is {n} words, the limit is {MAX_QUOTE_WORDS}, and no prefix "
+                        f"within the limit ends at a sentence or clause boundary. Choose a "
+                        f"shorter span that ends cleanly.",
+                    ))
+                    continue
+            else:
+                out.append(Failure(
+                    "quote",
+                    f"{where} is {n} words, the limit is {MAX_QUOTE_WORDS}. Shorten it to the essential span.",
+                ))
+        # A trimmed quote carries the marker, which is not in the source.
+        verify = text[:-len(TRIM_MARKER)] if text.endswith(TRIM_MARKER) else text
+        if not quote_is_grounded(verify, by_id[cid]):
             out.append(Failure(
                 "quote",
                 f"{where} is not a verbatim span of {cid}. Copy the words exactly as they appear, "

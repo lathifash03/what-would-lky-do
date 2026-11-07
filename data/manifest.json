@@ -2,9 +2,11 @@
   "corpus": "Lee Kuan Yew speeches, interviews and parliament records",
   "note": "Transcript text is never stored in this file. data/raw/ and data/processed/ are gitignored.",
   "n_documents": 17,
-  "n_chunks": 147,
+  "n_chunks": 127,
+  "n_chunks_built": 146,
+  "n_documents_not_answerable": 1,
   "word_count_raw": 34567,
-  "word_count_processed": 25747,
+  "word_count_processed": 25504,
   "chunking": {
     "target_words": 250,
     "overlap_words": 40
@@ -21,12 +23,16 @@
       "word_count_raw": 3902,
       "word_count_processed": 3850,
       "n_chunks": 20,
+      "n_chunks_built": 20,
+      "answer_use": true,
       "sha256_raw": "6ed909e3efd0559a891039bfb47f0086db28dda99eefa1e6d100fc11ff3e2b77",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/speeches/record-details/74331d65-115d-11e3-83d5-0050568939ad",
       "lines_dropped": 37,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_1965-11-08_everton-park-housing-opening",
@@ -37,14 +43,18 @@
       "verbatim": true,
       "third_party_quotes": false,
       "word_count_raw": 3943,
-      "word_count_processed": 3886,
-      "n_chunks": 21,
+      "word_count_processed": 3700,
+      "n_chunks": 20,
+      "n_chunks_built": 20,
+      "answer_use": true,
       "sha256_raw": "e4739e1fa21ce2e2bae1d1cfe139c8a161c290ddf772d8f3913709be49445979",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/data/pdfdoc/lky19651108.pdf",
       "lines_dropped": 35,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 3,
+      "words_removed_excluded": 192
     },
     {
       "document_id": "lky_1965-11-14_kong-chow-huay-kuan-TRANSLATION",
@@ -57,12 +67,16 @@
       "word_count_raw": 785,
       "word_count_processed": 762,
       "n_chunks": 4,
+      "n_chunks_built": 4,
+      "answer_use": true,
       "sha256_raw": "8cbf574c6d6ba1da31302fe2d5b1046d110e4006f1f094094002126264f1a024",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/data/pdfdoc/lky19651114a.pdf",
       "lines_dropped": 11,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_1965-12-14_parliament-motion-of-thanks",
@@ -74,13 +88,17 @@
       "third_party_quotes": true,
       "word_count_raw": 9595,
       "word_count_processed": 2819,
-      "n_chunks": 19,
+      "n_chunks": 0,
+      "n_chunks_built": 19,
+      "answer_use": false,
       "sha256_raw": "8bf5db4c606c6f096ba607576f5513042cb473e92675e2132f73001580670dba",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/audiovisual_records/record-details/51bcfad6-1164-11e3-83d5-0050568939ad",
       "lines_dropped": 98,
       "words_removed_speaker": 128,
       "words_removed_quotations": 6519,
-      "quotation_spans_removed": 29
+      "quotation_spans_removed": 29,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_1967-06-19_university-convocation-dinner",
@@ -93,12 +111,16 @@
       "word_count_raw": 2376,
       "word_count_processed": 2326,
       "n_chunks": 13,
+      "n_chunks_built": 13,
+      "answer_use": true,
       "sha256_raw": "0d8680161e065e97140c6ff90c8b3a6dfc4bb0234bd9aeb36724fad8abb534a8",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/data/pdfdoc/lky19670619.pdf",
       "lines_dropped": 26,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_1970-08-16_river-valley-national-day-SUMMARY",
@@ -111,12 +133,16 @@
       "word_count_raw": 240,
       "word_count_processed": 204,
       "n_chunks": 1,
+      "n_chunks_built": 1,
+      "answer_use": true,
       "sha256_raw": "af777d0cdf2434ee25d090837423145ae5a84607014c728b59dce9d14510d2e9",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/data/pdfdoc/lky19700816.pdf",
       "lines_dropped": 2,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_1970-08-18_safti-commissioning",
@@ -129,12 +155,16 @@
       "word_count_raw": 431,
       "word_count_processed": 411,
       "n_chunks": 4,
+      "n_chunks_built": 4,
+      "answer_use": true,
       "sha256_raw": "31c0d70338cea8d20e17db6b6d812338c423125305e33d0d501d6ee5519c3707",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/speeches/record-details/72729e9a-115d-11e3-83d5-0050568939ad",
       "lines_dropped": 2,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_1993-12-15_chin-kang-huay-kuan-75th",
@@ -147,12 +177,16 @@
       "word_count_raw": 312,
       "word_count_processed": 282,
       "n_chunks": 2,
+      "n_chunks_built": 2,
+      "answer_use": true,
       "sha256_raw": "843911f6fcb08d39c2e388f4fe2c3f79b5a7e5c439594c7668451d2ade26124c",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/data/pdfdoc/lky19931215.pdf",
       "lines_dropped": 2,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_1997-11-25_kwangtung-hui-kuan-60th",
@@ -165,12 +199,16 @@
       "word_count_raw": 452,
       "word_count_processed": 429,
       "n_chunks": 3,
+      "n_chunks_built": 3,
+      "answer_use": true,
       "sha256_raw": "f75a7f05cde209e8b06408ffcf21cf18e4d2df934042f70aeba12deb47df3f66",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/data/pdfdoc/1997112503.htm",
       "lines_dropped": 2,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_1999-12-28_scci-millennium-dinner",
@@ -183,12 +221,16 @@
       "word_count_raw": 1033,
       "word_count_processed": 1001,
       "n_chunks": 5,
+      "n_chunks_built": 5,
+      "answer_use": true,
       "sha256_raw": "0975d4a2970811cec8c1459e692f96f2cf18842e653dbc6d89643ec52c148080",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/data/pdfdoc/1999122802.htm",
       "lines_dropped": 11,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_2005-04-28_ethical-leadership-kl",
@@ -199,14 +241,18 @@
       "verbatim": true,
       "third_party_quotes": false,
       "word_count_raw": 2432,
-      "word_count_processed": 2379,
+      "word_count_processed": 2322,
       "n_chunks": 13,
+      "n_chunks_built": 13,
+      "answer_use": true,
       "sha256_raw": "b17be0065f925acbc7d08405acbfb515f87be73580e0c3d1671532dd9f83059d",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/speeches/record-details/78ad7a52-115d-11e3-83d5-0050568939ad",
       "lines_dropped": 8,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 1,
+      "words_removed_excluded": 57
     },
     {
       "document_id": "lky_2005-06-02_keeping-my-mandarin-alive-launch",
@@ -219,12 +265,16 @@
       "word_count_raw": 424,
       "word_count_processed": 394,
       "n_chunks": 4,
+      "n_chunks_built": 4,
+      "answer_use": true,
       "sha256_raw": "b7b9870fbdab1bc4e31f83d776799ebe2e85e3790f15e74cad89b5943aa247bc",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/speeches/record-details/7a80add8-115d-11e3-83d5-0050568939ad",
       "lines_dropped": 2,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_2009-05-11_narayana-murthy-book-launch",
@@ -237,12 +287,16 @@
       "word_count_raw": 514,
       "word_count_processed": 485,
       "n_chunks": 3,
+      "n_chunks_built": 3,
+      "answer_use": true,
       "sha256_raw": "89ae786eebea3d2aab257f9401270f81086a1cd049cc825734d3da1fd5a01d58",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/speeches/record-details/8023f350-115d-11e3-83d5-0050568939ad",
       "lines_dropped": 2,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_2009-07-01_caas-changi-launch",
@@ -255,12 +309,16 @@
       "word_count_raw": 914,
       "word_count_processed": 879,
       "n_chunks": 5,
+      "n_chunks_built": 5,
+      "answer_use": true,
       "sha256_raw": "cb5696a1d4ed9c64520d2baa0c9196fb92ad35632c8ec8749ba11db288ee9587",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/speeches/record-details/803cbf8b-115d-11e3-83d5-0050568939ad",
       "lines_dropped": 5,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_2010-08-13_youth-olympic-flame-marina-bay",
@@ -273,12 +331,16 @@
       "word_count_raw": 381,
       "word_count_processed": 341,
       "n_chunks": 2,
+      "n_chunks_built": 2,
+      "answer_use": true,
       "sha256_raw": "902965a122920e10b7d82322b8a9e08177a304c8e3e50740d6f9a7ae56ca215f",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/data/pdfdoc/20100823002.htm",
       "lines_dropped": 2,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_2010-09-01_interview-nyt-seth-mydans",
@@ -291,12 +353,16 @@
       "word_count_raw": 5908,
       "word_count_processed": 4402,
       "n_chunks": 23,
+      "n_chunks_built": 23,
+      "answer_use": true,
       "sha256_raw": "7b108f8273f00b245c4727c311efb03453dc85eef41cf4c9d9723724706f6d0b",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/speeches/record-details/80e4563e-115d-11e3-83d5-0050568939ad",
       "lines_dropped": 24,
       "words_removed_speaker": 1463,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     },
     {
       "document_id": "lky_2011-04-23_tanjong-pagar-family-day",
@@ -309,12 +375,16 @@
       "word_count_raw": 925,
       "word_count_processed": 897,
       "n_chunks": 5,
+      "n_chunks_built": 5,
+      "answer_use": true,
       "sha256_raw": "30b3d4b38d050c33347f3947b0a59cf726875cff65a2fe2c504868b9df3b79bd",
-      "url": null,
+      "url": "https://www.nas.gov.sg/archivesonline/speeches/record-details/81253f71-115d-11e3-83d5-0050568939ad",
       "lines_dropped": 12,
       "words_removed_speaker": 0,
       "words_removed_quotations": 0,
-      "quotation_spans_removed": 0
+      "quotation_spans_removed": 0,
+      "excluded_spans_removed": 0,
+      "words_removed_excluded": 0
     }
   ]
 }

@@ -37,7 +37,7 @@ names and no values. `make check` refuses a commit that stages corpus text,
 vectors, `.env`, or a key-shaped string in the diff. Model names are read from
 `.env` and are not hardcoded anywhere in `src/`.
 
-No LangChain, no Chroma, no sentence-transformers, no RAGAS. The index is 147
+No LangChain, no Chroma, no sentence-transformers, no RAGAS. The index is 127
 chunks in one float32 matrix and retrieval is a single matrix-vector product in
 numpy; a vector database would add a service and a schema to a problem that does
 not have them. RAGAS is absent because every metric here is deterministic — an
@@ -52,7 +52,7 @@ flowchart TD
     A["NAS Archives Online<br/>17 records"] -->|"opened in a browser,<br/>copied by hand"| B["data/raw/*.txt<br/>(gitignored)"]
     B --> C["src/process.py<br/>drop page furniture · normalise quotes<br/>speaker filter · strip quoted extracts"]
     C --> M["data/manifest.json<br/>(committed: metadata + sha256)"]
-    C --> D["147 chunks<br/>250 words, 40 overlap"]
+    C --> D["127 chunks<br/>250 words, 40 overlap"]
     D --> E["src/embed.py<br/>text-embedding-3-small"]
     E --> F["vectors.npy<br/>(gitignored)"]
 
@@ -75,7 +75,7 @@ flowchart TD
 
 **17 documents**, speeches, one interview and one parliament record, from the
 National Archives of Singapore, Archives Online. **34,567 words raw → 25,747
-processed → 147 chunks** of 250 words with 40 words of overlap. Two documents are
+processed → 127 chunks** of 250 words with 40 words of overlap. Two documents are
 official translations.
 
 **Collection was manual, and nothing here crawls the archive.** nas.gov.sg sits
@@ -144,11 +144,12 @@ demonstrated end to end**. See Known limitations.
 
 One real run, recorded in [eval/results.md](eval/results.md) with per-question
 detail in `eval/results.json`. Model `gpt-4.1-mini`, embeddings
-`text-embedding-3-small`, 147 chunks, abstention threshold **0.4938**.
+`text-embedding-3-small`, 127 chunks, abstention threshold **0.4317**.
 
-**24 questions, reported separately because they are not comparable:**
+**23 questions, reported separately because they are not comparable:**
 
-- **12 synthetic** — the model wrote each from a known gold chunk.
+- **11 synthetic** — the model wrote each from a known gold chunk. A twelfth was
+  removed in run 2 because its gold chunk is no longer indexed.
 - **6 assistant-written** — broad topic questions. These were never confirmed by a
   human, and no gold documents were ever confirmed for them. `eval/results.md`
   and `eval/questions.json` still use the legacy IDs `hand-01`…`hand-06` and the
@@ -158,24 +159,51 @@ detail in `eval/results.json`. Model `gpt-4.1-mini`, embeddings
   holds, personal trivia, a request to fabricate a quote, a prompt injection, and
   a question outside politics.
 
-| Metric | Value |
-|---|---|
-| Retrieval hit@5, all gold-labelled | **100.0%** over the 12 questions that have a gold label |
-| — synthetic | **100.0%** (n=12) |
-| — assistant-written | **n/a** (n=0 of 6 have gold labels) |
-| Citation validity | **100.0%** |
-| Quote grounding | **100.0%** of 34 quotes shipped |
-| Correct abstention, unanswerable set | **100.0%** |
-| Extrapolation labelling | **n/a** — 0 extrapolations, so the path is implemented, not yet demonstrated end to end |
-| Gate pass rate | **87.5%** |
-| First-attempt pass rate | **37.5%** |
+| Metric | Run 1 | Run 2 |
+|---|---|---|
+| Questions | 24 | 23 |
+| Chunks indexed | 147 | 127 |
+| Threshold | 0.4938 | 0.4317 (frozen) |
+| Retrieval hit@5, gold-labelled | 100.0% (n=12) | 100.0% (n=11) |
+| — assistant-written | n/a (0 of 6 labelled) | n/a (0 of 6 labelled) |
+| Citation validity | 100.0% | 100.0% |
+| Quote grounding | 100.0% (34 quotes) | 100.0% (40 quotes) |
+| Answerable questions answered | 12 of 18 | 12 of 17 |
+| Unanswerable questions refused | 6 of 6 | 6 of 6 |
+| Gate pass rate | 87.5% | 78.3% |
+| First-attempt pass rate | 37.5% | 52.2% |
+| **Model compliance on first attempt** | not measured | **39.1%** |
+| Auto-trimmed quotes | n/a (no trimming) | **17**, in 7 answers |
+| Never passed within 2 retries | 3 | 5 |
+| API errors | 2 | 2 |
+
+Run 1 is preserved in [eval/results_run1.md](eval/results_run1.md); run 2 is
+[eval/results.md](eval/results.md).
+
+**Four changes were made at once** in run 2 — `exclude_spans`, the parliament
+record out of the answering index, a 20-word margin in the persona prompt, and
+deterministic auto-trimming — so the effects above are **not separable**. Nothing
+here attributes a movement to a single change.
+
+**Model compliance on first attempt (39.1%) is the number that matters for the
+quote limit.** It counts answers where no quote exceeded 25 words *before* any
+trimming, so it is unaffected by the fix. The model still broke the limit in 14
+of 23 answers. Auto-trimming repaired 17 quotes across 7 answers; it did not
+make the model comply.
+
+**The eval is noisy at this n.** Run 2's pipeline was evaluated twice, because
+the first pass did not record the two new metrics. Same code, same frozen
+threshold, no retuning: gate pass rate came out 91.3% then 78.3%, and
+first-attempt pass 56.5% then 52.2%. The table reports the second pass, the one
+that produced the committed `eval/results.md`. A spread that wide across two
+runs means single-digit differences between run 1 and run 2 carry no weight.
 
 Passed only after a retry: **12**. Never passed within 2 retries: **3**. API errors
 during the run: **2**.
 
 Three caveats belong next to those numbers. The synthetic questions are easier by
 construction, because the question was written from the passage that should be
-retrieved — 100.0% there is an upper bound, not an estimate. The threshold 0.4938
+retrieved — 100.0% there is an upper bound, not an estimate. The threshold 0.4317
 was tuned on these same 24 questions, with no held-out split, so the abstention
 rate is optimistic. And citation validity and quote grounding are close to
 tautological on answers that passed, since the same checks are enforced as gates
@@ -210,62 +238,62 @@ I pasted a prompt into the wrong Claude Code session. It rebuilt a pipeline that
 
 ## Known limitations
 
-- **The parliament record loses most of its words and cannot be quoted.**
-  `lky_1965-12-14_parliament-motion-of-thanks` goes from 9,595 words to 2,819 —
-  about 71% removed — because the extracts Lee read aloud from other publications
-  could not be separated from his own speech reliably. The document is still
-  retrieved, and the separation question retrieves it, but nothing in it can be
-  quoted.
-- **The threshold suppresses answerable questions, and no single threshold would
-  fix it.** Six of the 18 answerable questions abstained: three fell below 0.4938
-  (`syn-02` 0.464, `hand-01` 0.437, `hand-06` 0.434) and three failed their gates
-  (`syn-01`, `syn-07`, `hand-05`), computed from the per-question table in
-  `eval/results.md`. The two score populations overlap — the highest-scoring
-  unanswerable question reaches **0.485** while answerable ones go down to
-  **0.434** — so no cut point separates them.
-- **The quote gate only checks quotes.** It verifies that a quoted span is
-  verbatim and that its document may be quoted at all, but it says nothing about
-  the prose around the quote. A paraphrase can therefore carry third-party text
-  into an answer written in Lee's voice, which is the same failure the gate was
-  built to prevent, arriving by a route the gate does not watch. Sample
-  conversation (a), "Why did Singapore separate from Malaysia?", passed every
-  gate and quoted nothing, yet its content tracks passages Lee was reading aloud
-  from others — C. P. Fitzgerald, and the Barisan Sosialis claim that the
-  separation was "British-inspired". Two greps over the indexed chunks confirm
-  those passages survived cleaning: *"aristocratic society dominated by the Malay
-  feudal families"* and *"clear majority of the population"* are both present, in
-  chunk `lky_1965-12-14_parliament-motion-of-thanks#0018` — one of the two chunks
-  that answer cited. That chunk is correctly flagged `quotable: false`, so it
-  could not be quoted; it could still be paraphrased.
-- **The extrapolation path is implemented, not yet demonstrated end to end.** The
-  mode exists in `prompts/persona.md` and gate (e) enforces its exact label, but
-  it has never fired: **0 extrapolations across the 24 eval questions**, and in
-  sample conversation (c), on housing prices today, the model chose `abstain`
-  even though the similarity of 0.507 was above the 0.4938 threshold, so nothing
-  forced that choice. Extrapolation labelling is reported `n/a` for want of a
-  single case to measure.
-- **The 25-word quote limit is the dominant failure mode.** First-attempt pass
-  rate is 37.5%, and 37 of the 40 first-attempt gate failures were quote failures
-  (`eval/results.json`). The model shaves a word at a time instead of obeying.
-- **Three of 24 never passed within the retry budget**, and the eval run recorded
-  **2 API errors**: two `JSONDecodeError` on `hand-05`, from a response of roughly
-  49 KB (`eval/results.json`).
-- **There is no human-written evaluation set.** All 24 questions were written by
-  the assistant or fixed in advance, none were confirmed by a human, and no gold
-  documents were confirmed for the 6 assistant-written questions. Hit@5 for them
-  is therefore `n/a`, not zero. Their legacy IDs `hand-01`…`hand-06` in
-  `eval/results.md` are a naming artefact, not evidence of human authorship.
-- **Persona fidelity is not measured.** Nothing tests whether the voice resembles
-  his. The gates check that quotes are real; they say nothing about the prose
-  around them.
-- **Speeches only, English only, 17 documents.** No memoirs or books, which are
-  copyrighted and cannot be redistributed. He also spoke in Malay and Hokkien;
-  only two translated records are here.
-- **Retrieval is the ceiling.** The gates verify only against what was retrieved.
-  If the right passage is not in the top 5, a confident, correctly cited and
-  completely unhelpful answer is still possible.
+### Fixed in run 2
 
----
+- **The known third-party blocks are out of the corpus.** `exclude_spans` in
+  [config/sources.yaml](config/sources.yaml) cuts them by hand-written begin/end
+  markers before chunking, and a marker that is not found raises rather than
+  silently leaving the text in. Removed: Teh Cheang Wan's suicide letter (57
+  words) and three Reader's Digest extracts by Francis Vivien Drake (192 words).
+  `tests/test_run2.py` asserts each one is absent from the index.
+- **The parliament record is out of the answering index.**
+  `lky_1965-12-14_parliament-motion-of-thanks` carries `answer_use: false`: its
+  19 chunks stay in the manifest for transparency and are not indexed, because
+  the extract boundaries could not be recovered reliably. The two Fitzgerald
+  passages that leaked into run 1's answer (a) by paraphrase are no longer
+  retrievable, which a test asserts. The corpus went from 147 to 127 indexed
+  chunks as a result.
+- **Quote length is handled in code, not asked of the model.** A quote that is
+  verbatim and from a quotable chunk but over 25 words is trimmed to the longest
+  prefix within the limit that ends at a sentence or clause boundary, marked
+  `[…]`, and re-verified as a substring. A non-verbatim long quote, or one from a
+  non-quotable document, still fails. The persona prompt now asks for 20 words as
+  a margin.
+
+### Still open
+
+- **The quote gate only checks quotes, so paraphrase can still leak.** It
+  verifies that a quoted span is verbatim and that its document may be quoted,
+  and says nothing about the prose around it. Run 1 demonstrated this: answer (a)
+  passed every gate, quoted nothing, and tracked passages Lee was reading aloud
+  from C. P. Fitzgerald. Run 2 removed *that* document, but the mechanism is
+  untouched — **any third-party text I did not find can still reach an answer by
+  paraphrase.** The automated scan for further blocks was unreliable: the raw
+  files have unbalanced quotation marks, so a quote-pairing detector reports
+  Lee's own speech as third-party. Only hand-identified spans are excluded.
+- **The extrapolation mode has still never fired.** 0 extrapolations across the
+  23 eval questions, and in sample conversation (c), on housing prices today, the
+  model chose `abstain` at similarity 0.532, above the frozen 0.4317 threshold,
+  so nothing forced it. Extrapolation labelling is `n/a` for want of a case.
+- **The model still will not keep to the quote limit.** Model compliance on first
+  attempt is **39.1%**: it broke 25 words in 14 of 23 answers, and auto-trimming
+  repaired 17 quotes across 7 answers. The fix removes the symptom, not the cause.
+- **Five of 23 never passed within the retry budget** (`syn-03`, `syn-07`,
+  `syn-11`, `asst-05`, `asst-06`), and the run recorded **2 API errors**.
+- **The evaluation is small, noisy and not independent.** n=23. The same pipeline
+  evaluated twice produced gate pass rates of 91.3% and 78.3%, so differences of
+  a few points mean nothing. All questions were written by the assistant or fixed
+  in advance; none were human-confirmed; no gold documents exist for the 6
+  assistant-written questions, so their hit@5 is `n/a`. The threshold is frozen
+  but was still calibrated on the same 23 questions it is scored on.
+  `eval/human_written.json` does not exist, so there is no held-out set.
+- **Removing the parliament record cost the separation question.** In run 2,
+  sample conversation (a) fell back to the Hokkien translation and failed its
+  gates. The corpus is more trustworthy and less able to answer.
+- **Persona fidelity is not measured.** Nothing tests whether the voice resembles
+  his.
+- **Speeches only, English only, 17 documents.** No memoirs or books.
+- **Retrieval is the ceiling.** The gates verify only against what was retrieved.
 
 ## What I would change
 
