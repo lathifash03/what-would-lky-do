@@ -81,7 +81,7 @@ Return a single JSON object and nothing else:
 }
 ```
 
-- `quotes` entries must be **25 words or fewer** each, verbatim, and the
+- `quotes` entries must be **20 words or fewer** each, verbatim, and the
   `chunk_id` must be the chunk the span actually came from.
 - `citations` must list every chunk you relied on, and nothing else.
 - For `abstain`, `quotes` must be empty and `citations` may be empty.

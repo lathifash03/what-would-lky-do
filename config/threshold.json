@@ -1,11 +1,11 @@
 {
-  "threshold": 0.4938,
+  "threshold": 0.4317,
   "youden_j": 0.8333,
-  "sensitivity": 0.8333,
-  "specificity": 1.0,
+  "sensitivity": 1.0,
+  "specificity": 0.8333,
   "method": "Youden's J maximised over midpoints between observed best-chunk cosine scores",
   "calibrated_on": "eval/questions.json",
-  "n_answerable": 18,
+  "n_answerable": 17,
   "n_unanswerable": 6,
   "answerable_best_score_range": [
     0.4343,
@@ -37,32 +37,20 @@
         "lky_1965-11-08_everton-park-housing-opening#0003",
         "lky_1967-06-19_university-convocation-dinner#0011",
         "lky_1967-06-19_university-convocation-dinner#0010",
-        "lky_1965-11-08_everton-park-housing-opening#0012",
-        "lky_1965-11-08_everton-park-housing-opening#0004"
+        "lky_1965-11-08_everton-park-housing-opening#0004",
+        "lky_1965-11-08_everton-park-housing-opening#0011"
       ]
     },
     {
       "id": "syn-03",
       "answerable": true,
-      "best": 0.5199498534202576,
+      "best": 0.5199108719825745,
       "top_ids": [
         "lky_1965-11-14_kong-chow-huay-kuan-TRANSLATION#0001",
         "lky_1965-11-14_kong-chow-huay-kuan-TRANSLATION#0000",
         "lky_1970-08-18_safti-commissioning#0003",
         "lky_1970-08-18_safti-commissioning#0000",
         "lky_1970-08-18_safti-commissioning#0001"
-      ]
-    },
-    {
-      "id": "syn-04",
-      "answerable": true,
-      "best": 0.6848841905593872,
-      "top_ids": [
-        "lky_1965-12-14_parliament-motion-of-thanks#0011",
-        "lky_1965-12-14_parliament-motion-of-thanks#0013",
-        "lky_1965-12-14_parliament-motion-of-thanks#0012",
-        "lky_1965-12-14_parliament-motion-of-thanks#0010",
-        "lky_1965-12-14_parliament-motion-of-thanks#0014"
       ]
     },
     {
@@ -74,7 +62,7 @@
         "lky_1967-06-19_university-convocation-dinner#0011",
         "lky_1967-06-19_university-convocation-dinner#0012",
         "lky_1967-06-19_university-convocation-dinner#0008",
-        "lky_1965-11-08_everton-park-housing-opening#0020"
+        "lky_1967-06-19_university-convocation-dinner#0009"
       ]
     },
     {
@@ -116,7 +104,7 @@
     {
       "id": "syn-09",
       "answerable": true,
-      "best": 0.7283027172088623,
+      "best": 0.7282978296279907,
       "top_ids": [
         "lky_1997-11-25_kwangtung-hui-kuan-60th#0002",
         "lky_1997-11-25_kwangtung-hui-kuan-60th#0001",
@@ -140,13 +128,13 @@
     {
       "id": "syn-11",
       "answerable": true,
-      "best": 0.6353534460067749,
+      "best": 0.6150755286216736,
       "top_ids": [
         "lky_2005-04-28_ethical-leadership-kl#0009",
-        "lky_2005-04-28_ethical-leadership-kl#0010",
         "lky_2005-04-28_ethical-leadership-kl#0008",
         "lky_2010-09-01_interview-nyt-seth-mydans#0019",
-        "lky_2005-04-28_ethical-leadership-kl#0002"
+        "lky_2005-04-28_ethical-leadership-kl#0002",
+        "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION#0006"
       ]
     },
     {
@@ -162,31 +150,31 @@
       ]
     },
     {
-      "id": "hand-01",
+      "id": "asst-01",
       "answerable": true,
       "best": 0.43702083826065063,
       "top_ids": [
         "lky_1965-11-08_everton-park-housing-opening#0001",
-        "lky_2005-04-28_ethical-leadership-kl#0012",
         "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION#0001",
         "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION#0007",
-        "lky_1965-11-08_everton-park-housing-opening#0000"
+        "lky_1965-11-08_everton-park-housing-opening#0000",
+        "lky_2005-04-28_ethical-leadership-kl#0011"
       ]
     },
     {
-      "id": "hand-02",
+      "id": "asst-02",
       "answerable": true,
       "best": 0.5813422203063965,
       "top_ids": [
         "lky_1970-08-16_river-valley-national-day-SUMMARY#0000",
+        "lky_1965-11-08_everton-park-housing-opening#0011",
         "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION#0003",
         "lky_1999-12-28_scci-millennium-dinner#0003",
-        "lky_1999-12-28_scci-millennium-dinner#0000",
-        "lky_2011-04-23_tanjong-pagar-family-day#0003"
+        "lky_1999-12-28_scci-millennium-dinner#0000"
       ]
     },
     {
-      "id": "hand-03",
+      "id": "asst-03",
       "answerable": true,
       "best": 0.6429834365844727,
       "top_ids": [
@@ -198,7 +186,7 @@
       ]
     },
     {
-      "id": "hand-04",
+      "id": "asst-04",
       "answerable": true,
       "best": 0.6563611030578613,
       "top_ids": [
@@ -210,19 +198,19 @@
       ]
     },
     {
-      "id": "hand-05",
+      "id": "asst-05",
       "answerable": true,
       "best": 0.502399206161499,
       "top_ids": [
         "lky_2005-04-28_ethical-leadership-kl#0000",
-        "lky_2005-04-28_ethical-leadership-kl#0001",
         "lky_2005-04-28_ethical-leadership-kl#0010",
+        "lky_2005-04-28_ethical-leadership-kl#0001",
         "lky_2009-05-11_narayana-murthy-book-launch#0002",
         "lky_2005-04-28_ethical-leadership-kl#0007"
       ]
     },
     {
-      "id": "hand-06",
+      "id": "asst-06",
       "answerable": true,
       "best": 0.4343014657497406,
       "top_ids": [
@@ -248,10 +236,10 @@
     {
       "id": "adv-02-memoir-only",
       "answerable": false,
-      "best": 0.37910932302474976,
+      "best": 0.37234801054000854,
       "top_ids": [
-        "lky_1965-12-14_parliament-motion-of-thanks#0014",
         "lky_2010-09-01_interview-nyt-seth-mydans#0009",
+        "lky_1965-11-08_everton-park-housing-opening#0019",
         "lky_2010-09-01_interview-nyt-seth-mydans#0013",
         "lky_2010-09-01_interview-nyt-seth-mydans#0007",
         "lky_2010-09-01_interview-nyt-seth-mydans#0008"
@@ -275,10 +263,10 @@
       "best": 0.3135899603366852,
       "top_ids": [
         "lky_1965-11-08_everton-park-housing-opening#0003",
-        "lky_1965-11-08_everton-park-housing-opening#0020",
         "lky_1967-06-19_university-convocation-dinner#0010",
         "lky_1965-11-08_everton-park-housing-opening#0004",
-        "lky_1967-06-19_university-convocation-dinner#0011"
+        "lky_1967-06-19_university-convocation-dinner#0011",
+        "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION#0018"
       ]
     },
     {
@@ -288,9 +276,9 @@
       "top_ids": [
         "lky_2010-09-01_interview-nyt-seth-mydans#0016",
         "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION#0006",
-        "lky_1965-12-14_parliament-motion-of-thanks#0015",
+        "lky_1965-11-08_everton-park-housing-opening#0017",
         "lky_1965-11-08_everton-park-housing-opening#0011",
-        "lky_1965-11-08_everton-park-housing-opening#0017"
+        "lky_1965-11-08_everton-park-housing-opening#0010"
       ]
     },
     {
@@ -305,5 +293,8 @@
         "lky_1967-06-19_university-convocation-dinner#0008"
       ]
     }
-  ]
+  ],
+  "frozen": true,
+  "frozen_at": "2026-11-07 run 2",
+  "frozen_note": "FROZEN. Calibrated on the 23 questions in eval/questions.json before the eval run, and not retuned afterwards. Still tuned on the same set it is scored on, so the abstention figures remain optimistic."
 }
