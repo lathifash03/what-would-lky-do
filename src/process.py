@@ -120,6 +120,80 @@ def assert_no_replacement_chars(document_id: str, text: str) -> None:
         )
 
 
+# --- document headings --------------------------------------------------------
+
+# The archive prints a heading block before the speech: who spoke, to whom,
+# where and when, in capitals, often across several lines.
+_HEADING_LEAD = re.compile(
+    r"^\s*(TRANSCRIPT OF|SUMMARY OF|SPEECH (BY|MADE BY)|ADDRESS BY|REMARKS BY"
+    r"|TRANSLATION OF|PRIME MINISTER'?S SPEECH|INTERVIEW WITH"
+    r"|EXCERPTS? (OF|FROM))\b"
+)
+
+
+def _is_shouted(line: str, threshold: float = 0.7) -> bool:
+    letters = [c for c in line if c.isalpha()]
+    if len(letters) < 3:
+        return False
+    return sum(c.isupper() for c in letters) / len(letters) >= threshold
+
+
+def strip_heading_block(text: str, scan_lines: int = 12) -> tuple[str, int]:
+    """Remove the capitalised heading block at the top of a transcript.
+
+    The heading is the archive describing the record, not Lee speaking. Left
+    in, it is indexed as if it were speech: before this, a query about English
+    as a working language returned the line "SPEECH BY MINISTER MENTOR LEE
+    KUAN YEW AT THE LAUNCHING OF THE BOOK..." as its fifth hit, and a quote
+    gate that only checks substrings would have allowed it to be quoted.
+
+    Only the top of the document is scanned, and only consecutive shouted
+    lines are taken, so capitalised words inside the body are untouched. The
+    title is kept in data/manifest.json as metadata.
+    """
+    lines = text.splitlines()
+    removed = 0
+    i = 0
+    # skip leading blanks
+    while i < len(lines) and not lines[i].strip():
+        i += 1
+    start = i
+    in_heading = False
+    while i < len(lines) and i < start + scan_lines:
+        stripped = lines[i].strip()
+        if not stripped:
+            if in_heading:
+                i += 1
+                removed += 1
+                continue
+            break
+        if _HEADING_LEAD.match(stripped) and _is_shouted(stripped):
+            in_heading = True
+        elif in_heading and _is_shouted(stripped):
+            pass                      # continuation line of the same heading
+        elif in_heading and re.fullmatch(r"[\d\s.,;:'\"()/-]+", stripped):
+            pass                      # trailing date fragment, e.g. "1965."
+        else:
+            break
+        i += 1
+        removed += 1
+    if not in_heading:
+        return text, 0
+    return "\n".join(lines[:start] + lines[i:]), removed
+
+
+def looks_like_heading(text: str) -> bool:
+    """Whether a span of text is an archive heading rather than speech.
+
+    Used by the quote gate: a quote matching a heading is not something the
+    speaker said.
+    """
+    stripped = (text or "").strip()
+    if not stripped:
+        return False
+    return bool(_HEADING_LEAD.match(stripped)) and _is_shouted(stripped, 0.6)
+
+
 # --- paragraphs ---------------------------------------------------------------
 
 def join_wrapped_lines(text: str) -> str:
@@ -250,9 +324,30 @@ def drop_stub_paragraphs(text: str, min_words: int = 4) -> str:
 
 # --- chunking -----------------------------------------------------------------
 
+# Splitting on every full stop cuts "Mr. Chairman" in half, which produced
+# chunks beginning "Mr." on its own once the heading block was removed.
+_ABBREVIATIONS = (
+    "Mr", "Mrs", "Ms", "Dr", "Prof", "Sr", "Jr", "St", "Rt", "Hon",
+    "No", "Nos", "vs", "etc", "Co", "Ltd", "Inc", "Capt", "Gen", "Col",
+    "Sgt", "Lt", "Maj", "Govt", "Dept", "Univ", "Tan", "Dato", "Encik",
+)
+_ABBREV_RE = "|".join(_ABBREVIATIONS)
+
+
 def _sentences(paragraph: str) -> list[str]:
-    parts = re.split(r"(?<=[.!?])\s+", paragraph.strip())
-    return [p.strip() for p in parts if p.strip()]
+    text = paragraph.strip()
+    # protect "Mr." style abbreviations and single initials from the split
+    protected = re.sub(rf"\b({_ABBREV_RE})\.",
+                       lambda m: m.group(1) + "\x00", text)
+    protected = re.sub(r"\b([A-Z])\.",
+                       lambda m: m.group(1) + "\x01", protected)
+    parts = re.split(r"(?<=[.!?])\s+", protected)
+    out = []
+    for part in parts:
+        restored = part.replace("\x00", ".").replace("\x01", ".").strip()
+        if restored:
+            out.append(restored)
+    return out
 
 
 def chunk_text(text: str, target: int = TARGET_WORDS,
@@ -351,6 +446,8 @@ def process_document(entry: dict) -> DocResult:
     text = normalise_quotes(raw)
     assert_no_replacement_chars(document_id, text)
     text, lines_dropped = drop_furniture(text)
+    text, heading_lines = strip_heading_block(text)
+    lines_dropped += heading_lines
 
     words_speaker = 0
     if entry.get("speaker_filter"):

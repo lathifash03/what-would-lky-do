@@ -14,7 +14,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.config import chat_model, prompt_hash
 from src.embed import Index
-from src.rag import DISCLOSURE, answer_question, load_threshold, log_turn
+from src.rag import (DISCLOSURE, answer_question, load_threshold, log_turn,
+                     manifest_titles)
 
 MODE_NOTE = {
     "documented": "grounded in the retrieved speeches",
@@ -45,11 +46,23 @@ def render(result) -> str:
         for quote in answer["quotes"]:
             lines.append(f"  \"{quote['text']}\"  — {quote['chunk_id']}")
     by_id = {c["chunk_id"]: c for c in result.retrieved}
+    # Titles live in the manifest, not on the chunk: an archive heading left
+    # in the indexed text would be retrievable and quotable as if it were
+    # speech, so it is stripped at processing time.
+    titles = manifest_titles()
     if answer.get("citations"):
         lines.append("sources:")
         for cid in answer["citations"]:
             chunk = by_id.get(cid, {})
-            lines.append(f"  {cid}  \"{chunk.get('title', '?')}\", {chunk.get('date', '?')}")
+            doc = chunk.get("document_id", "?")
+            notes = []
+            if chunk.get("translated"):
+                notes.append("official translation")
+            if not chunk.get("quotable", True):
+                notes.append("cite only, not quotable")
+            note = f"  [{'; '.join(notes)}]" if notes else ""
+            lines.append(f"  {doc}  {chunk.get('date', '?')}  {cid}{note}")
+            lines.append(f"      \"{titles.get(doc, '?')}\"")
     lines.append(f"attempts: {len(result.attempts)}"
                  f"{' (passed first try)' if result.first_attempt_passed else ' (passed after retry)'}")
     return "\n".join(lines)

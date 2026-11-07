@@ -316,3 +316,97 @@ def test_translated_documents_are_flagged(chunks):
         "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION",
         "lky_1965-11-14_kong-chow-huay-kuan-TRANSLATION",
     }
+
+
+# --- document headings are not speech ----------------------------------------
+# The archive prints "SPEECH BY MINISTER MENTOR LEE KUAN YEW AT ..." above each
+# transcript. Indexed as body text it was retrievable: before this was fixed it
+# came back as the 5th hit for a question about English as a working language,
+# and a substring-only quote gate would have allowed it to be quoted.
+
+HEADING_LEADS = ["TRANSCRIPT OF", "SUMMARY OF", "SPEECH BY", "SPEECH MADE BY",
+                 "ADDRESS BY", "REMARKS BY", "TRANSLATION OF"]
+
+
+@pytest.mark.parametrize("lead", HEADING_LEADS)
+def test_no_heading_lead_phrase_survives_anywhere(corpus_text, lead):
+    assert lead not in corpus_text, f"heading phrase {lead!r} is in the corpus"
+
+
+def test_no_chunk_starts_with_a_heading(chunks):
+    from src.process import looks_like_heading
+    offenders = [c["chunk_id"] for c in chunks if looks_like_heading(c["text"])]
+    assert offenders == [], f"chunks starting with a heading: {offenders}"
+
+
+def test_no_chunk_contains_a_manifest_title(chunks, manifest):
+    """A title in the body text could be quoted back as if spoken."""
+    titles = [d["title"].casefold() for d in manifest["documents"]]
+    offenders = [(c["chunk_id"], t) for c in chunks for t in titles
+                 if t in c["text"].casefold()]
+    assert offenders == [], f"manifest titles found in chunk text: {offenders[:3]}"
+
+
+def test_strip_heading_block_removes_a_multi_line_header():
+    from src.process import strip_heading_block
+    text = ("SPEECH BY THE PRIME MINISTER, MR. LEE KUAN YEW,\n"
+            "AT THE OPENING CEREMONY OF EVERTON PARK HOUSING\n"
+            "ESTATE ON 8TH NOVEMBER, 1965.\n"
+            "Mr. Chairman and Friends,\n"
+            "It is always a problem.")
+    out, removed = strip_heading_block(text)
+    assert removed == 3
+    assert "EVERTON PARK HOUSING" not in out
+    assert "Mr. Chairman and Friends," in out
+    assert "It is always a problem." in out
+
+
+def test_strip_heading_block_swallows_a_trailing_date_line():
+    from src.process import strip_heading_block
+    text = ("TRANSLATION OF PRIME MINISTER'S SPEECH IN HOKKIEN\n"
+            "GIVEN AT THE LEONG KHAY HUAY KUAN ON 17TH OCTOBER,\n"
+            "1965.\n"
+            "Mr. Chairman, Brothers & Friends,")
+    out, removed = strip_heading_block(text)
+    assert removed == 3
+    assert out.strip().startswith("Mr. Chairman")
+
+
+def test_strip_heading_block_leaves_capitalised_body_text_alone():
+    """Only the top of the document is scanned, and only a lead phrase starts
+    a heading, so shouted words inside the speech survive."""
+    from src.process import strip_heading_block
+    text = ("I want to talk about housing.\n"
+            "The PLEBIAN EXPRESS said otherwise.\n"
+            "THAT IS THEIR VIEW, not mine.")
+    out, removed = strip_heading_block(text)
+    assert removed == 0
+    assert out == text
+
+
+def test_looks_like_heading_distinguishes_headings_from_speech():
+    from src.process import looks_like_heading
+    assert looks_like_heading(
+        "SPEECH BY SENIOR MINISTER LEE KUAN YEW AT THE DINNER")
+    assert looks_like_heading(
+        "TRANSCRIPT OF SPEECH BY THE PRIME MINISTER, MR. LEE KUAN YEW")
+    assert not looks_like_heading("I am happy to launch the new Authority.")
+    assert not looks_like_heading("THAT IS THEIR VIEW, not mine.")
+    assert not looks_like_heading("")
+
+
+# --- abbreviations are not sentence ends -------------------------------------
+
+def test_abbreviations_do_not_split_a_sentence():
+    """Splitting on every full stop left chunks beginning "Mr." alone."""
+    from src.process import _sentences
+    out = _sentences("Mr. Chairman and Friends, I am glad. Dr. Lee agreed.")
+    assert out[0].startswith("Mr. Chairman")
+    assert not any(s.strip() in {"Mr.", "Dr."} for s in out)
+
+
+def test_no_chunk_is_an_orphaned_abbreviation(chunks):
+    offenders = [c["chunk_id"] for c in chunks
+                 if re.search(r"(^|\n\n)(Mr|Mrs|Dr|Ms|Prof)\.\s*(\n|$)",
+                              c["text"])]
+    assert offenders == [], f"orphaned abbreviation fragments: {offenders}"

@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .config import ROOT, chat_model, prompt_hash, prompt_text
+from .process import MANIFEST
 from .gates import EXTRAPOLATION_LABEL, Failure, format_failures, run_gates
 
 DISCLOSURE = "AI simulation based on archived speeches, not Lee Kuan Yew."
@@ -45,13 +46,35 @@ def load_threshold() -> tuple[float, dict]:
     return float(data["threshold"]), data
 
 
-def format_context(retrieved: list[dict]) -> str:
-    """Chunks as the model sees them, each labelled with the id it must cite."""
+def manifest_titles() -> dict[str, str]:
+    """document_id -> title. Titles live in the manifest, not in the chunks,
+    because an archive heading indexed as body text is retrievable and could
+    be quoted back as if it were speech."""
+    data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    return {d["document_id"]: d["title"] for d in data["documents"]}
+
+
+def format_context(retrieved: list[dict], titles: dict[str, str] | None = None
+                   ) -> str:
+    """Chunks as the model sees them, each labelled with the id it must cite.
+
+    The quotable and translated flags are shown because the model has to obey
+    them, and the gates will reject the answer if it does not.
+    """
+    titles = titles or manifest_titles()
     blocks = []
     for chunk in retrieved:
+        notes = []
+        if not chunk.get("quotable", True):
+            notes.append("CITE ONLY, NEVER QUOTE")
+        if chunk.get("translated"):
+            notes.append("OFFICIAL TRANSLATION")
+        note = f"  [{'; '.join(notes)}]" if notes else ""
+        title = titles.get(chunk["document_id"], chunk["document_id"])
         blocks.append(
             f"[chunk_id: {chunk['chunk_id']}]\n"
-            f"Source: \"{chunk['title']}\", {chunk['date']} (similarity {chunk['score']:.3f})\n"
+            f"Source: \"{title}\", {chunk['date']} "
+            f"(similarity {chunk['score']:.3f}){note}\n"
             f"---\n{chunk['text']}"
         )
     return "\n\n========\n\n".join(blocks)
@@ -125,6 +148,7 @@ def answer_question(index, question: str, client=None, top_k: int = 5,
     model = chat_model()
     threshold, _ = load_threshold()
 
+    titles = manifest_titles()
     retrieved = index.search(question, top_k=top_k)
     best = retrieved[0]["score"] if retrieved else 0.0
 
@@ -140,13 +164,29 @@ def answer_question(index, question: str, client=None, top_k: int = 5,
         except Exception as exc:                      # recorded, never silently swallowed
             result.attempts.append(Attempt(attempt_index, None, [], error=f"{type(exc).__name__}: {exc}"))
             continue
-        failures = run_gates(candidate, retrieved, best, threshold)
+        failures = run_gates(candidate, retrieved, best, threshold,
+                             question=question,
+                             titles=list(titles.values()))
         result.attempts.append(Attempt(attempt_index, candidate, [str(f) for f in failures]))
         if not failures:
             result.passed, result.answer = True, candidate
             return result
         previous = candidate
-    result.answer = previous
+    # Fail closed. A failing answer is never returned as if it had passed:
+    # after the retry budget the only honest output is an abstention.
+    result.passed = False
+    result.answer = {
+        "answer": (
+            f"{DISCLOSURE} I cannot answer that from the archive I have. "
+            f"The draft answer did not pass the checks on quotes, citations "
+            f"or figures, so it is withheld."
+        ),
+        "citations": [],
+        "quotes": [],
+        "mode": "abstain",
+        "withheld_after_gate_failure": True,
+        "final_failures": [str(f) for f in failures],
+    }
     return result
 
 
