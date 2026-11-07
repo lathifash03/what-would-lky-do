@@ -1,0 +1,321 @@
+{
+  "run_at_utc": "2026-11-07T09:15:54+00:00",
+  "chat_model": "gpt-4.1-mini",
+  "embed_model": "text-embedding-3-small",
+  "persona_prompt_sha256_12": "5cd74c7fcb8e",
+  "threshold": 0.4317,
+  "threshold_frozen": true,
+  "chunk_count": 127,
+  "metrics": {
+    "n_questions": 8,
+    "hit_at_5_answerable": 0.8333,
+    "n_gold_labelled": 6,
+    "answerable_answered": 3,
+    "answerable_refused": 3,
+    "n_answerable": 6,
+    "unanswerable_correctly_refused": 2,
+    "n_unanswerable": 2,
+    "first_attempt_pass_rate": 0.375,
+    "model_compliance_first_attempt": 0.5,
+    "auto_trimmed_quotes": 1,
+    "answers_with_an_auto_trim": 1,
+    "gate_pass_rate": 0.625,
+    "api_errors": 0
+  },
+  "rows": [
+    {
+      "id": "human-01",
+      "question": "What were Lee Kuan Yew's arguments for providing public housing to Singaporeans, and how did he explain its importance during the opening of Everton Park Housing Estate?",
+      "answerable": true,
+      "gold_document_ids": [
+        "lky_1965-11-08_everton-park-housing-opening"
+      ],
+      "best_similarity": 0.4992,
+      "retrieved_documents": [
+        "lky_1965-11-08_everton-park-housing-opening",
+        "lky_2005-04-28_ethical-leadership-kl"
+      ],
+      "hit_at_5": true,
+      "mode": "abstain",
+      "acceptable_modes": [
+        "documented"
+      ],
+      "mode_correct": false,
+      "passed_gates": false,
+      "first_attempt_passed": false,
+      "attempts": 3,
+      "auto_trimmed": 0,
+      "quote_limit_broken_first_attempt": true,
+      "citations": [],
+      "attempt_failures": [
+        [
+          "[quote] quotes[4] is 34 words, the limit is 25, and no prefix within the limit ends at a sentence or clause boundary. Choose a shorter span that ends cleanly."
+        ],
+        [
+          "[quote] quotes[0] is not a verbatim span of lky_1965-11-08_everton-park-housing-opening#0001. Copy the words exactly as they appear, or drop the quote. Paraphrase is not allowed in 'quotes'.",
+          "[quote] quotes[4] is 28 words, the limit is 25, and no prefix within the limit ends at a sentence or clause boundary. Choose a shorter span that ends cleanly."
+        ],
+        [
+          "[quote] quotes[4] is 28 words, the limit is 25, and no prefix within the limit ends at a sentence or clause boundary. Choose a shorter span that ends cleanly."
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "human-02",
+      "question": "What role did Lee Kuan Yew believe universities should play in Singapore's national development and the preparation of its future leaders?",
+      "answerable": true,
+      "gold_document_ids": [
+        "lky_1967-06-19_university-convocation-dinner"
+      ],
+      "best_similarity": 0.5232,
+      "retrieved_documents": [
+        "lky_1965-11-08_everton-park-housing-opening",
+        "lky_1967-06-19_university-convocation-dinner",
+        "lky_1997-11-25_kwangtung-hui-kuan-60th",
+        "lky_1999-12-28_scci-millennium-dinner",
+        "lky_2011-04-23_tanjong-pagar-family-day"
+      ],
+      "hit_at_5": true,
+      "mode": "documented",
+      "acceptable_modes": [
+        "documented"
+      ],
+      "mode_correct": true,
+      "passed_gates": true,
+      "first_attempt_passed": true,
+      "attempts": 1,
+      "auto_trimmed": 0,
+      "quote_limit_broken_first_attempt": false,
+      "citations": [
+        "lky_2011-04-23_tanjong-pagar-family-day#0000",
+        "lky_1967-06-19_university-convocation-dinner#0001",
+        "lky_1999-12-28_scci-millennium-dinner#0000"
+      ],
+      "attempt_failures": [
+        []
+      ],
+      "errors": []
+    },
+    {
+      "id": "human-03",
+      "question": "Why did Lee Kuan Yew emphasize the importance of military discipline, professionalism, and national defence when addressing the first graduating officers of SAFTI?",
+      "answerable": true,
+      "gold_document_ids": [
+        "lky_1970-08-18_safti-commissioning"
+      ],
+      "best_similarity": 0.5304,
+      "retrieved_documents": [
+        "lky_1965-11-14_kong-chow-huay-kuan-TRANSLATION",
+        "lky_1970-08-16_river-valley-national-day-SUMMARY",
+        "lky_1970-08-18_safti-commissioning",
+        "lky_1999-12-28_scci-millennium-dinner",
+        "lky_2005-04-28_ethical-leadership-kl"
+      ],
+      "hit_at_5": true,
+      "mode": "abstain",
+      "acceptable_modes": [
+        "documented"
+      ],
+      "mode_correct": false,
+      "passed_gates": false,
+      "first_attempt_passed": false,
+      "attempts": 3,
+      "auto_trimmed": 0,
+      "quote_limit_broken_first_attempt": true,
+      "citations": [],
+      "attempt_failures": [
+        [
+          "[quote] quotes[3] is 35 words, the limit is 25, and no prefix within the limit ends at a sentence or clause boundary. Choose a shorter span that ends cleanly."
+        ],
+        [
+          "[quote] quotes[3] is 30 words, the limit is 25, and no prefix within the limit ends at a sentence or clause boundary. Choose a shorter span that ends cleanly."
+        ],
+        [
+          "[quote] quotes[3] is 30 words, the limit is 25, and no prefix within the limit ends at a sentence or clause boundary. Choose a shorter span that ends cleanly."
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "human-04",
+      "question": "How did Lee Kuan Yew define ethical leadership, and what principles did he believe public officials should uphold to maintain integrity and public trust?",
+      "answerable": true,
+      "gold_document_ids": [
+        "lky_2005-04-28_ethical-leadership-kl"
+      ],
+      "best_similarity": 0.5726,
+      "retrieved_documents": [
+        "lky_2005-04-28_ethical-leadership-kl"
+      ],
+      "hit_at_5": true,
+      "mode": "abstain",
+      "acceptable_modes": [
+        "documented"
+      ],
+      "mode_correct": false,
+      "passed_gates": false,
+      "first_attempt_passed": false,
+      "attempts": 3,
+      "auto_trimmed": 0,
+      "quote_limit_broken_first_attempt": true,
+      "citations": [],
+      "attempt_failures": [
+        [
+          "[quote] quotes[3] is 31 words, the limit is 25. Shorten it to the essential span.",
+          "[quote] quotes[3] is not a verbatim span of lky_2005-04-28_ethical-leadership-kl#0004. Copy the words exactly as they appear, or drop the quote. Paraphrase is not allowed in 'quotes'.",
+          "[quote] quotes[4] is 26 words, the limit is 25. Shorten it to the essential span.",
+          "[quote] quotes[4] is not a verbatim span of lky_2005-04-28_ethical-leadership-kl#0011. Copy the words exactly as they appear, or drop the quote. Paraphrase is not allowed in 'quotes'."
+        ],
+        [
+          "[quote] quotes[3] is 31 words, the limit is 25. Shorten it to the essential span.",
+          "[quote] quotes[3] is not a verbatim span of lky_2005-04-28_ethical-leadership-kl#0004. Copy the words exactly as they appear, or drop the quote. Paraphrase is not allowed in 'quotes'.",
+          "[quote] quotes[4] is 26 words, the limit is 25. Shorten it to the essential span.",
+          "[quote] quotes[4] is not a verbatim span of lky_2005-04-28_ethical-leadership-kl#0011. Copy the words exactly as they appear, or drop the quote. Paraphrase is not allowed in 'quotes'."
+        ],
+        [
+          "[quote] quotes[1] is not a verbatim span of lky_2005-04-28_ethical-leadership-kl#0001. Copy the words exactly as they appear, or drop the quote. Paraphrase is not allowed in 'quotes'.",
+          "[quote] quotes[3] is not a verbatim span of lky_2005-04-28_ethical-leadership-kl#0004. Copy the words exactly as they appear, or drop the quote. Paraphrase is not allowed in 'quotes'.",
+          "[quote] quotes[4] is not a verbatim span of lky_2005-04-28_ethical-leadership-kl#0011. Copy the words exactly as they appear, or drop the quote. Paraphrase is not allowed in 'quotes'."
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "human-05",
+      "question": "What was Lee Kuan Yew's assessment of Singapore's geopolitical position, and how did he explain the country's approach to maintaining relationships with major global powers?",
+      "answerable": true,
+      "gold_document_ids": [
+        "lky_2010-09-01_interview-nyt-seth-mydans"
+      ],
+      "best_similarity": 0.5539,
+      "retrieved_documents": [
+        "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION",
+        "lky_1999-12-28_scci-millennium-dinner",
+        "lky_2005-04-28_ethical-leadership-kl",
+        "lky_2010-09-01_interview-nyt-seth-mydans"
+      ],
+      "hit_at_5": true,
+      "mode": "documented",
+      "acceptable_modes": [
+        "documented"
+      ],
+      "mode_correct": true,
+      "passed_gates": true,
+      "first_attempt_passed": false,
+      "attempts": 3,
+      "auto_trimmed": 0,
+      "quote_limit_broken_first_attempt": false,
+      "citations": [
+        "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION#0018"
+      ],
+      "attempt_failures": [
+        [
+          "[translation] this answer uses translated records (['lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION#0018']), so it must contain the phrase \"in the official translation\"."
+        ],
+        [
+          "[number] these figures or years are in your answer but not in the retrieved chunks: ['1965']. Remove them, or use a figure that is in the text."
+        ],
+        []
+      ],
+      "errors": []
+    },
+    {
+      "id": "human-06",
+      "question": "How did Lee Kuan Yew view the importance of preserving Chinese language and cultural identity while adapting to Singapore's multicultural and multilingual society?",
+      "answerable": true,
+      "gold_document_ids": [
+        "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION",
+        "lky_2005-06-02_keeping-my-mandarin-alive-launch"
+      ],
+      "best_similarity": 0.6146,
+      "retrieved_documents": [
+        "lky_1997-11-25_kwangtung-hui-kuan-60th",
+        "lky_2010-09-01_interview-nyt-seth-mydans",
+        "lky_2011-04-23_tanjong-pagar-family-day"
+      ],
+      "hit_at_5": false,
+      "mode": "documented",
+      "acceptable_modes": [
+        "documented"
+      ],
+      "mode_correct": true,
+      "passed_gates": true,
+      "first_attempt_passed": true,
+      "attempts": 1,
+      "auto_trimmed": 1,
+      "quote_limit_broken_first_attempt": true,
+      "citations": [
+        "lky_2011-04-23_tanjong-pagar-family-day#0001",
+        "lky_2010-09-01_interview-nyt-seth-mydans#0016",
+        "lky_2010-09-01_interview-nyt-seth-mydans#0015",
+        "lky_1997-11-25_kwangtung-hui-kuan-60th#0001",
+        "lky_1997-11-25_kwangtung-hui-kuan-60th#0000"
+      ],
+      "attempt_failures": [
+        []
+      ],
+      "errors": []
+    },
+    {
+      "id": "human-07",
+      "question": "What was Lee Kuan Yew's position on regulating generative artificial intelligence, and what specific policies did he propose for governing AI development?",
+      "answerable": false,
+      "gold_document_ids": [],
+      "best_similarity": 0.3928,
+      "retrieved_documents": [
+        "lky_1997-11-25_kwangtung-hui-kuan-60th",
+        "lky_1999-12-28_scci-millennium-dinner",
+        "lky_2005-04-28_ethical-leadership-kl"
+      ],
+      "hit_at_5": null,
+      "mode": "abstain",
+      "acceptable_modes": [
+        "abstain"
+      ],
+      "mode_correct": true,
+      "passed_gates": true,
+      "first_attempt_passed": true,
+      "attempts": 1,
+      "auto_trimmed": 0,
+      "quote_limit_broken_first_attempt": false,
+      "citations": [],
+      "attempt_failures": [
+        []
+      ],
+      "errors": []
+    },
+    {
+      "id": "human-08",
+      "question": "What specific measures would Lee Kuan Yew recommend in 2026 to address Singapore's current housing affordability crisis, including modern mortgage policies and property market regulations?",
+      "answerable": false,
+      "gold_document_ids": [],
+      "best_similarity": 0.4993,
+      "retrieved_documents": [
+        "lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION",
+        "lky_1999-12-28_scci-millennium-dinner",
+        "lky_2005-04-28_ethical-leadership-kl"
+      ],
+      "hit_at_5": null,
+      "mode": "abstain",
+      "acceptable_modes": [
+        "abstain",
+        "extrapolation"
+      ],
+      "mode_correct": true,
+      "passed_gates": true,
+      "first_attempt_passed": false,
+      "attempts": 2,
+      "auto_trimmed": 0,
+      "quote_limit_broken_first_attempt": false,
+      "citations": [],
+      "attempt_failures": [
+        [
+          "[number] these figures or years are in your answer but not in the retrieved chunks: ['2026']. Remove them, or use a figure that is in the text."
+        ],
+        []
+      ],
+      "errors": []
+    }
+  ]
+}

@@ -180,6 +180,34 @@ detail in `eval/results.json`. Model `gpt-4.1-mini`, embeddings
 Run 1 is preserved in [eval/results_run1.md](eval/results_run1.md); run 2 is
 [eval/results.md](eval/results.md).
 
+### Held-out human-written set (n=8)
+
+The only set in this project whose questions **and** gold documents were both
+chosen by a human, the author. Six answerable with author-selected gold
+documents, two unanswerable by design. The threshold was frozen at 0.4317 before
+this set was ever run; it was run once, and **nothing was tuned on it** — no
+code, prompt or threshold changed after seeing these results.
+
+| Metric | Value |
+|---|---|
+| Retrieval hit@5 (answerable) | **83.3%** over 6 gold-labelled questions |
+| Answerable: answered | **3 of 6** |
+| Answerable: refused (abstained) | **3 of 6** |
+| Unanswerable: correctly refused | **2 of 2** |
+| First-attempt pass rate | **37.5%** |
+| Model compliance on first attempt | **50.0%** |
+| Auto-trimmed quotes | **1** in 1 answer |
+| Gate pass rate | **62.5%** |
+| API errors | 0 |
+
+**These are the worst numbers in the project, and they are the most honest ones.**
+Half the questions failed their gates, and the system refused three of six
+questions a human knew the corpus could answer. Every other set here was either
+written from the passages it tests or scored against gold labels no human
+confirmed. At n=8 a single question moves any rate by 12.5 points, so treat these
+as a direction, not a measurement. Full detail in
+[eval/results_human.md](eval/results_human.md).
+
 **Four changes were made at once** in run 2 — `exclude_spans`, the parliament
 record out of the answering index, a 20-word margin in the persona prompt, and
 deterministic auto-trimming — so the effects above are **not separable**. Nothing

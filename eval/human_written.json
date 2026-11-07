@@ -1,0 +1,90 @@
+[
+  {
+    "id": "human-01",
+    "question": "What were Lee Kuan Yew's arguments for providing public housing to Singaporeans, and how did he explain its importance during the opening of Everton Park Housing Estate?",
+    "gold_document_ids": ["lky_1965-11-08_everton-park-housing-opening"],
+    "answerable": true,
+    "author": "human",
+    "confirmed": true,
+    "confirmed_by": "author",
+    "kind": "human_written",
+    "acceptable_modes": ["documented"]
+  },
+  {
+    "id": "human-02",
+    "question": "What role did Lee Kuan Yew believe universities should play in Singapore's national development and the preparation of its future leaders?",
+    "gold_document_ids": ["lky_1967-06-19_university-convocation-dinner"],
+    "answerable": true,
+    "author": "human",
+    "confirmed": true,
+    "confirmed_by": "author",
+    "kind": "human_written",
+    "acceptable_modes": ["documented"]
+  },
+  {
+    "id": "human-03",
+    "question": "Why did Lee Kuan Yew emphasize the importance of military discipline, professionalism, and national defence when addressing the first graduating officers of SAFTI?",
+    "gold_document_ids": ["lky_1970-08-18_safti-commissioning"],
+    "answerable": true,
+    "author": "human",
+    "confirmed": true,
+    "confirmed_by": "author",
+    "kind": "human_written",
+    "acceptable_modes": ["documented"]
+  },
+  {
+    "id": "human-04",
+    "question": "How did Lee Kuan Yew define ethical leadership, and what principles did he believe public officials should uphold to maintain integrity and public trust?",
+    "gold_document_ids": ["lky_2005-04-28_ethical-leadership-kl"],
+    "answerable": true,
+    "author": "human",
+    "confirmed": true,
+    "confirmed_by": "author",
+    "kind": "human_written",
+    "acceptable_modes": ["documented"]
+  },
+  {
+    "id": "human-05",
+    "question": "What was Lee Kuan Yew's assessment of Singapore's geopolitical position, and how did he explain the country's approach to maintaining relationships with major global powers?",
+    "gold_document_ids": ["lky_2010-09-01_interview-nyt-seth-mydans"],
+    "answerable": true,
+    "author": "human",
+    "confirmed": true,
+    "confirmed_by": "author",
+    "kind": "human_written",
+    "acceptable_modes": ["documented"]
+  },
+  {
+    "id": "human-06",
+    "question": "How did Lee Kuan Yew view the importance of preserving Chinese language and cultural identity while adapting to Singapore's multicultural and multilingual society?",
+    "gold_document_ids": ["lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION", "lky_2005-06-02_keeping-my-mandarin-alive-launch"],
+    "answerable": true,
+    "author": "human",
+    "confirmed": true,
+    "confirmed_by": "author",
+    "kind": "human_written",
+    "acceptable_modes": ["documented"]
+  },
+  {
+    "id": "human-07",
+    "question": "What was Lee Kuan Yew's position on regulating generative artificial intelligence, and what specific policies did he propose for governing AI development?",
+    "gold_document_ids": [],
+    "answerable": false,
+    "author": "human",
+    "confirmed": true,
+    "confirmed_by": "author",
+    "kind": "human_written",
+    "acceptable_modes": ["abstain"]
+  },
+  {
+    "id": "human-08",
+    "question": "What specific measures would Lee Kuan Yew recommend in 2026 to address Singapore's current housing affordability crisis, including modern mortgage policies and property market regulations?",
+    "gold_document_ids": [],
+    "answerable": false,
+    "author": "human",
+    "confirmed": true,
+    "confirmed_by": "author",
+    "kind": "human_written",
+    "acceptable_modes": ["abstain", "extrapolation"]
+  }
+]
