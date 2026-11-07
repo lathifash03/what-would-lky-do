@@ -105,14 +105,23 @@ def evaluate() -> dict:
     synthetic = [r for r in rows if r["kind"] == "synthetic"]
     handwritten = [r for r in rows if r["kind"] == "handwritten"]
     scored = [r for r in rows if r["hit_at_5"] is not None]
+    # A question with no gold label cannot be a retrieval miss. Counting it as
+    # one reported hand-written hit@5 as 0.0% when the truth was "not measured",
+    # which is a fabricated number dressed as a measurement.
+    scored_synthetic = [r for r in synthetic if r["hit_at_5"] is not None]
+    scored_handwritten = [r for r in handwritten if r["hit_at_5"] is not None]
     extrapolations = [r for r in rows if r["mode"] == "extrapolation"]
     total_quotes = sum(r["quote_count"] for r in rows)
 
     metrics = {
         "n_questions": len(rows),
         "hit_at_5_all_gold": _rate(sum(bool(r["hit_at_5"]) for r in scored), len(scored)),
-        "hit_at_5_synthetic": _rate(sum(bool(r["hit_at_5"]) for r in synthetic), len(synthetic)),
-        "hit_at_5_handwritten": _rate(sum(bool(r["hit_at_5"]) for r in handwritten), len(handwritten)),
+        "hit_at_5_synthetic": _rate(sum(bool(r["hit_at_5"]) for r in scored_synthetic), len(scored_synthetic)),
+        "hit_at_5_handwritten": _rate(sum(bool(r["hit_at_5"]) for r in scored_handwritten), len(scored_handwritten)),
+        "n_gold_labelled": len(scored),
+        "n_synthetic_gold_labelled": len(scored_synthetic),
+        "n_handwritten_gold_labelled": len(scored_handwritten),
+        "n_handwritten": len(handwritten),
         "citation_validity_rate": _rate(sum(r["citation_valid"] for r in rows), len(rows)),
         "quote_grounding_rate": _rate(sum(r["grounded_quote_count"] for r in rows), total_quotes),
         "total_quotes": total_quotes,
@@ -165,9 +174,9 @@ def write_markdown(report: dict) -> None:
         "",
         "| Metric | Value | What it counts |",
         "|---|---|---|",
-        f"| Retrieval hit@5 (all gold-labelled) | {_pct(m['hit_at_5_all_gold'])} | gold chunk, or any chunk of the gold document, in the top 5 |",
-        f"| — on synthetic questions | {_pct(m['hit_at_5_synthetic'])} | upper bound: the question was written from the gold chunk |",
-        f"| — on hand-written questions | {_pct(m['hit_at_5_handwritten'])} | the harder and more honest number |",
+        f"| Retrieval hit@5 (all gold-labelled) | {_pct(m['hit_at_5_all_gold'])} | over the {m['n_gold_labelled']} questions that have a gold label |",
+        f"| — on synthetic questions | {_pct(m['hit_at_5_synthetic'])} | n={m['n_synthetic_gold_labelled']}; upper bound, the question was written from the gold chunk |",
+        f"| — on hand-written questions | {_pct(m['hit_at_5_handwritten'])} | n={m['n_handwritten_gold_labelled']} of {m['n_handwritten']} have gold labels |",
         f"| Citation validity | {_pct(m['citation_validity_rate'])} | answers whose every cited chunk_id was retrieved |",
         f"| Quote grounding | {_pct(m['quote_grounding_rate'])} | of {m['total_quotes']} quotes shipped, share verbatim in the cited chunk |",
         f"| Correct abstention (unanswerable set) | {_pct(m['correct_abstention_rate'])} | mode was abstain, or a labelled extrapolation where that is acceptable |",
@@ -195,9 +204,14 @@ def write_markdown(report: dict) -> None:
         "The same checks are enforced as gates during generation, so these rates mostly measure "
         "whether the retry loop converged, not whether the model is naturally well behaved. "
         "The first-attempt pass rate is the number that says something about the raw model.",
-        "5. **Persona fidelity is not measured at all.** Nothing here tests whether the voice "
+        f"5. **Hand-written hit@5: {m['n_handwritten_gold_labelled']} of {m['n_handwritten']} "
+        "hand-written questions carry a confirmed gold document.** Questions without a gold label "
+        "are excluded from the hit@5 denominator rather than counted as misses, so where that row "
+        "reads n/a the number was not measured, not zero. The hand-written set is the only honest "
+        "test of retrieval here, and it is the one that is missing.",
+        "6. **Persona fidelity is not measured at all.** Nothing here tests whether the voice "
         "resembles Lee Kuan Yew's. That would need a human judge and a rubric.",
-        "6. **English only, speeches only.** See the README's Limitations section.",
+        "7. **English only, speeches only.** See the README's Limitations section.",
         "",
         "## Per-question results",
         "",
