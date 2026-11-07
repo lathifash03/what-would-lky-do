@@ -245,22 +245,25 @@ Sample transcripts from a separate real run are in
 
 ## What went wrong
 
-**1. The model could not keep to a word limit, even with a gate watching it.**
-37 of the 40 first-attempt gate failures were quote failures, and 25 of those were quotes over 25 words. The model trimmed one word at a time instead of obeying, so only 37.5% of answers passed on the first try and 3 of 24 never passed. The gate did its job, because nothing over the limit got through. The failure was the model's compliance. I saw the same thing in my Instagram pipeline, where the model miscounted its own words. What I would change: let the model pick sentence IDs and let code cut the quote.
+**1. The model still cannot keep to the quote limit, even with gates and a trimming fix.**
+In run 1, 37 of the 40 first-attempt gate failures were quote failures. In run 2 the model stayed within 25 words on only 39.1% of first attempts (50.0% on the human-written set). My auto-trim cut 17 quotes down, but it only cuts at a clause boundary. Two questions I wrote myself (human-01 at 28 words, human-03 at 30 words) still died because no boundary existed. Cutting at a word boundary is the fix I did not make, because it would have changed the code after I saw the results.
 
-**2. The most relevant document cannot be quoted.**
-The 1965 Parliament speech lost 6,776 of its 9,595 words (about 71%), because about half of it quotes Barisan Sosialis publications. All five hits for "Why did Singapore separate from Malaysia?" come from this document. The system can cite it but never quote it. I chose that over quoting text I could not be sure Lee said.
+**2. The gates worked, and the system got too cautious to be useful.**
+On the 8 questions I wrote, 3 of the 6 answerable ones were refused. In all three, retrieval had found the right document and the gates then stopped the answer. In one (human-04) the model put a paraphrase inside the quotes field, and the gate correctly refused it. That is the gate doing its job, but a system that refuses half of what it could answer is safe, not good.
 
-**3. My abstain threshold was too strict and tuned on the same 24 questions.**
-At 0.4938 it refused two questions it should have answered (hand-01 and hand-06). With only six unanswerable questions, its perfect specificity means very little.
+**3. My own evaluation was optimistic, and the held-out set showed by how much.**
+On the 23 questions I tuned on, 12 of 17 answerable questions were answered and the gate pass rate was 78.3%. On the 8 questions I wrote afterwards, it was 3 of 6 and 62.5%. With samples this small it only points in a direction, but it is the direction I warned about. Also, the threshold no longer does the work. Unanswerable questions scored 0.485 and 0.499, above the 0.4317 threshold, so they were refused by the model, not by retrieval.
 
-**4. My evaluation is not independent.**
-The synthetic questions come from the same chunks they test, and the six other questions were written by the assistant, not by me. No gold documents were ever confirmed by a human. An early run also reported hit@5 as 0.0%, which was just missing labels, not a real result. I only caught it by reading the table.
+**4. Removing the parliament record made the system more trustworthy and less able.**
+About 71% of that speech had to go, because Lee was reading out other people's writing and the cleaning could not separate it reliably. Then "Why did Singapore separate from Malaysia?" stopped passing its gates. My scan for other third-party text was unreliable too (the transcripts have unbalanced quotation marks), so I removed only the spans I found by hand. Anything I did not find can still leak through a paraphrase, because the gates check quotes, not paraphrase.
 
-**5. I almost lost work by running two sessions on one repo.**
-I pasted a prompt into the wrong Claude Code session. It rebuilt a pipeline that was already committed and overwrote it. I found out by reading `git log` and `git status` before approving a checkout. Next time: one session per repo, and check git first.
+**5. Retrieval is a ceiling.**
+Synthetic hit@5 was 100%, but that is an upper bound, because the model wrote those questions from the chunk it should retrieve. On my own questions it was 83.3%. For human-06, neither gold document was in the top 5, and the system answered from three other documents anyway.
 
-**Not yet shown:** the extrapolation mode exists in the code and prompt, but it never fired. 0 of 24 eval questions used it, and when I asked about housing prices today, the model chose to abstain.
+**6. Process mistakes.**
+I ran two Claude Code sessions on the same repo and one rebuilt work that was already committed. In run 2 the metrics were not wired in when I first ran the eval, so I ran it twice. The gate pass rate was 91.3% the first time and 78.3% the second, on the same code. So run-to-run noise is bigger than most of the differences I was comparing.
+
+**Not shown:** extrapolation never fired in any evaluation.
 
 ---
 
