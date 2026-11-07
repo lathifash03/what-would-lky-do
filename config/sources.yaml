@@ -1,32 +1,200 @@
-# Corpus manifest input — FILL THIS IN YOURSELF.
+# Corpus manifest input.
 #
-# nas.gov.sg is behind AWS WAF Bot Control (see logs/collect_blocked_2026-11-07.md),
-# so this project does not crawl it. You open each speech in your normal browser,
-# copy the transcript text, and save it to data/raw/<document_id>.txt
-# (data/raw/ is gitignored and is never committed — NAS Archives Online records
-# are copyright-protected).
+# One entry per file in data/raw/. document_id is the filename stem.
 #
-# Then record the real metadata here. src/collect.py verifies every entry against
-# the file on disk and refuses to build a manifest from placeholders.
+# nas.gov.sg is behind AWS WAF Bot Control (see docs/collection-blocked.md), so
+# nothing here is fetched. The transcripts were saved by hand into data/raw/,
+# which is gitignored and never committed: NAS Archives Online records are
+# copyright-protected.
 #
-# RULES
-#   document_id : <yyyymmdd>-<short-slug>, lowercase, no spaces. Must be unique.
-#                 Use the speech date. If only the year is known, use <yyyy>0000-<slug>.
-#   date        : ISO date as printed on the record. YYYY-MM-DD, or YYYY if that is all it gives.
-#   source_url  : the exact Archives Online record URL you opened. No guessing.
-#   speaker     : must contain "Lee Kuan Yew". collect.py checks this and
-#                 checks the raw text too. Do not add a record by another speaker.
-#   topic       : one of economy, education, leadership, foreign_policy,
-#                 language_policy, national_service, housing, governance, society
+# url is null for every document on purpose. The record URLs are filled in by
+# hand. Nothing in this project invents a URL.
 #
-# Aim for 12-15 speeches spread across decades (1950s-2000s) and across topics.
-# Delete any entry you do not fill. Add more by copying the block.
+# FLAGS, and what they are for
+#   translated         : the text is an official translation, not Lee speaking
+#                        English. An answer using it must say so.
+#   verbatim           : the text is a transcript of what was said. false means
+#                        it is a summary written by someone else, so it may be
+#                        retrieved but no direct quote may be taken from it.
+#   third_party_quotes : the text quotes other people at length. Those words are
+#                        not Lee's and are stripped before indexing.
+#   speaker_filter     : for dialogue, the only turn prefix to keep.
+#
+# Titles are copied from the heading printed at the top of each transcript.
 
-speeches:
-  - document_id: ""
-    title: ""
-    date: ""
-    source_url: ""
-    speaker: "Lee Kuan Yew"
-    topic: ""
-    note: ""
+documents:
+  - document_id: lky_1965-10-17_leong-khay-huay-kuan-TRANSLATION
+    title: "Translation of the Prime Minister's speech in Hokkien at the Leong Khay Huay Kuan"
+    date: 1965-10-17
+    type: speech
+    url: null
+    translated: true
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_1965-11-08_everton-park-housing-opening
+    title: "Speech at the opening ceremony of Everton Park Housing Estate"
+    date: 1965-11-08
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_1965-11-14_kong-chow-huay-kuan-TRANSLATION
+    title: "Prime Minister's speech at the Kong Chew Huay Kuan (translation)"
+    date: 1965-11-14
+    type: speech
+    url: null
+    translated: true
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_1965-12-14_parliament-motion-of-thanks
+    title: "Speech moving the Motion of Thanks to the Yang di-Pertuan Negara on the opening of Parliament"
+    date: 1965-12-14
+    type: parliament
+    url: null
+    translated: false
+    verbatim: true
+    # About half this text, not a third, is Lee reading out Barisan Sosialis,
+    # PLEBIAN EXPRESS, Malayan Monitor and C.P. Fitzgerald material in order to
+    # rebut it. Measured: 18 quoted spans over 40 words, 4,607 of 9,595 words.
+    third_party_quotes: true
+    speaker_filter: null
+
+  - document_id: lky_1967-06-19_university-convocation-dinner
+    title: "Speech at a convocation dinner of the University of Singapore"
+    date: 1967-06-19
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_1970-08-16_river-valley-national-day-SUMMARY
+    title: "Summary of speech at the 5th National Day celebrations, River Valley constituency"
+    date: 1970-08-16
+    type: speech
+    url: null
+    translated: false
+    # The record is headed "SUMMARY OF SPEECH", so these are not Lee's words in
+    # his order. Retrievable, but excluded from the quote gate.
+    verbatim: false
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_1970-08-18_safti-commissioning
+    title: "Speech at the commissioning ceremony at SAFTI"
+    date: 1970-08-18
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_1993-12-15_chin-kang-huay-kuan-75th
+    title: "Speech at the 75th anniversary dinner of Chin Kang Huay Kuan"
+    date: 1993-12-15
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_1997-11-25_kwangtung-hui-kuan-60th
+    title: "Speech at the Singapore Kwangtung Hui Kuan 60th anniversary dinner"
+    date: 1997-11-25
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_1999-12-28_scci-millennium-dinner
+    title: "Speech at the SCCCI Millennium Celebration Dinner"
+    date: 1999-12-28
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_2005-04-28_ethical-leadership-kl
+    title: "Address at the Asian Strategy and Leadership Institute's World Ethics and Integrity Forum 2005, Kuala Lumpur"
+    date: 2005-04-28
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_2005-06-02_keeping-my-mandarin-alive-launch
+    title: "Speech at the launch of the book Keeping My Mandarin Alive"
+    date: 2005-06-02
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_2009-05-11_narayana-murthy-book-launch
+    title: "Speech at Narayana Murthy's book launch of A Better India: A Better World"
+    date: 2009-05-11
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_2009-07-01_caas-changi-launch
+    title: "Speech at the launch of the new Civil Aviation Authority of Singapore and the Changi Airport Group"
+    date: 2009-07-01
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_2010-08-13_youth-olympic-flame-marina-bay
+    title: "Remarks at the close of the Singapore leg of the Journey of the Youth Olympic Flame"
+    date: 2010-08-13
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
+
+  - document_id: lky_2010-09-01_interview-nyt-seth-mydans
+    title: "Interview with Seth Mydans of the New York Times and IHT"
+    date: 2010-09-01
+    type: interview
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    # Dialogue. Only "Mr Lee:" turns are kept; "Q:" and "Mdm Yeong:" are dropped.
+    speaker_filter: "Mr Lee"
+
+  - document_id: lky_2011-04-23_tanjong-pagar-family-day
+    title: "Speech at Tanjong Pagar GRC Family Day 2011"
+    date: 2011-04-23
+    type: speech
+    url: null
+    translated: false
+    verbatim: true
+    third_party_quotes: false
+    speaker_filter: null
