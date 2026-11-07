@@ -1,272 +1,255 @@
 # What Would Lee Kuan Yew Do?
 
-A small retrieval-augmented chatbot that answers questions from a corpus of
-archived Lee Kuan Yew speeches, and refuses to answer when the corpus cannot
-support one.
+A retrieval-augmented chatbot that answers from a corpus of archived Lee Kuan Yew
+speeches, and refuses to answer when the corpus cannot support one.
 
 > **This is an AI simulation based on archived speeches. It is not Lee Kuan Yew.**
 > It has no memory, no views of its own, and no knowledge beyond the passages
-> retrieved for each question. Every answer it gives is machine-generated text
-> conditioned on archive excerpts. Lee Kuan Yew died in March 2015 and has no
-> opinion about anything after that date.
+> retrieved for each question. Every answer is machine-generated text conditioned
+> on archive excerpts. Lee Kuan Yew died in March 2015 and has no opinion about
+> anything after that date. Where the corpus documents a controversial view, the
+> system conveys it as documented and attributed, without endorsement.
 
-The interesting part of this project is not that it answers. It is what it does
-when it cannot: every quote is checked character-for-character against the
-passage it claims to come from, every figure is checked against the retrieved
-text, and an answer that fails is not shown.
+The interesting part is not that it answers. It is what happens when it cannot:
+every quote is checked character-for-character against the passage it claims to
+come from, every figure is checked against the retrieved text, and an answer that
+fails is not shown.
 
 ---
 
-## How it works
+## How to run
+
+```bash
+cp .env.example .env          # add OPENAI_API_KEY, OPENAI_MODEL, EMBED_MODEL
+make install
+make test                     # gate and corpus tests, no API key needed
+
+make process                  # clean + chunk + manifest   (no API key)
+make embed                    # vectors.npy
+make questions                # synthetic eval questions
+make calibrate                # abstention threshold
+make eval                     # -> eval/results.md
+make chat                     # interactive
+```
+
+`.env` is gitignored and holds the only copy of the key. `.env.example` carries
+names and no values. `make check` refuses a commit that stages corpus text,
+vectors, `.env`, or a key-shaped string in the diff. Model names are read from
+`.env` and are not hardcoded anywhere in `src/`.
+
+No LangChain, no Chroma, no sentence-transformers, no RAGAS. The index is 147
+chunks in one float32 matrix and retrieval is a single matrix-vector product in
+numpy; a vector database would add a service and a schema to a problem that does
+not have them. RAGAS is absent because every metric here is deterministic — an
+evaluation scored by an LLM is as fallible as the thing it evaluates.
+
+---
+
+## Architecture
 
 ```mermaid
 flowchart TD
-    A["data/raw/*.txt<br/>manually saved transcripts<br/>(gitignored)"] --> B["src/collect.py<br/>clean · verify speaker · sha256"]
-    B --> M["data/manifest.json<br/>(committed: metadata only)"]
-    B --> C["data/processed/*.txt<br/>(gitignored)"]
-    C --> D["src/process.py<br/>paragraph chunks, 300-400 words<br/>one paragraph overlap"]
-    D --> E["chunks.json<br/>chunk_id = document_id#nnn"]
-    E --> F["src/embed.py<br/>OpenAI embeddings → vectors.npy"]
-    F --> G["src/embed.Index<br/>cosine top-5 in numpy"]
+    A["NAS Archives Online<br/>17 records"] -->|"opened in a browser,<br/>copied by hand"| B["data/raw/*.txt<br/>(gitignored)"]
+    B --> C["src/process.py<br/>drop page furniture · normalise quotes<br/>speaker filter · strip quoted extracts"]
+    C --> M["data/manifest.json<br/>(committed: metadata + sha256)"]
+    C --> D["147 chunks<br/>250 words, 40 overlap"]
+    D --> E["src/embed.py<br/>text-embedding-3-small"]
+    E --> F["vectors.npy<br/>(gitignored)"]
 
-    Q(["question"]) --> G
-    G -->|"5 chunks + scores"| H["src/rag.py<br/>persona prompt + context"]
+    Q(["question"]) --> G["cosine retrieval<br/>top 5"]
+    F --> G
+    D --> G
+    G --> H["src/rag.py<br/>persona prompt + 5 chunks"]
     H --> I["LLM → JSON<br/>answer · citations · quotes · mode"]
-    I --> J{"src/gates.py"}
-
-    J -->|"citations ⊄ retrieved<br/>quote not verbatim<br/>quote > 25 words<br/>figure not in chunks<br/>label missing<br/>below threshold, not abstaining"| K["retry with the exact<br/>failures + previous answer<br/>(max 2)"]
+    I --> J{"src/gates.py<br/>gates a–f"}
+    J -->|"fail"| K["retry with the exact failures<br/>+ the previous answer (max 2)"]
     K --> H
-    J -->|"all gates pass"| L["answer · mode · sources"]
-    K -->|"still failing"| X["shown as GATE FAILURE,<br/>never as an answer"]
-
-    E -.-> N["eval/make_questions.py<br/>12 synthetic from known chunks"]
-    G -.-> O["src/calibrate.py<br/>threshold from retrieval scores"]
-    O -.-> J
-    L -.-> P["logs/*.jsonl<br/>prompt hash · model · attempts"]
+    J -->|"pass"| L["answer + mode + sources"]
+    K -->|"still failing"| X["shown as GATE FAILURE"]
+    J -->|"below threshold"| Y["abstain"]
 ```
 
-### The gates
+---
 
-The model proposes, the gates dispose. All five are pure functions in
-[src/gates.py](src/gates.py) and are tested with no API key:
+## Corpus and provenance
 
-| Gate | Rule |
+**17 documents**, speeches, one interview and one parliament record, from the
+National Archives of Singapore, Archives Online. **34,567 words raw → 25,747
+processed → 147 chunks** of 250 words with 40 words of overlap. Two documents are
+official translations.
+
+**Collection was manual, and nothing here crawls the archive.** nas.gov.sg sits
+behind a bot check that answers scripted clients — including the request for
+`robots.txt` itself — with an empty response. Because `robots.txt` could not be
+read, the site's crawl policy was unknowable, so each record was opened in an
+ordinary browser and copied by hand. No browser spoofing, no challenge solving,
+no headless-browser workaround. The evidence is in
+[docs/collection-blocked.md](docs/collection-blocked.md).
+
+**The corpus is not in this repository.** Unauthorised reproduction of Archives
+Online records is a copyright violation, so `data/raw/`, `data/processed/` and
+`*.npy` are gitignored and never committed. What is committed is
+[data/manifest.json](data/manifest.json): per document the id, title, date, type,
+flags, raw and processed word counts, chunk count and a sha256 of the raw file —
+enough to verify and rebuild, not enough to reconstruct. Quotes in committed
+files are 25 words or fewer and attributed. Speeches only: no memoirs, no books.
+
+`url` is `null` for every document. Nothing was fetched, and a URL that was not
+actually visited would be a fabrication.
+
+Three documents need special handling, because the corpus can otherwise produce
+one specific failure — a quote that passes the verbatim check but was not said by
+Lee Kuan Yew:
+
+| document | handling |
 |---|---|
-| Citation subset | every cited `chunk_id` must be in the retrieved set |
-| Quote grounding | every quote must be a verbatim span of the chunk it names, whitespace and smart-punctuation normalised, **25 words or fewer** |
-| Number grounding | every figure and year in the answer must appear in the retrieved chunks, unless the mode is `extrapolation` |
-| Extrapolation label | mode `extrapolation` requires the exact sentence *"Hypothetical extrapolation, not something he said."*, and no other mode may carry it |
-| Abstention | if the best similarity is below the calibrated threshold, the mode must be `abstain` |
-
-On failure the exact failure list and the model's own previous answer are sent
-back to it, at most twice. An answer that never passes is reported as a gate
-failure.
-
-### Three modes
-
-- `documented` — the retrieved speeches support the answer, with citations and quotes.
-- `extrapolation` — the speeches establish a relevant principle but not the answer;
-  carries the mandatory label.
-- `abstain` — the archive does not cover it. No consolation answer in his voice.
+| `lky_2010-09-01_interview-nyt-seth-mydans` | the interviewer's turns are in the same transcript; **1,463 words** removed, keeping only `Mr Lee:` turns |
+| `lky_1965-12-14_parliament-motion-of-thanks` | Lee reads extracts from other publications into the record; **128 words** removed as other speakers and **6,519 words in 29 quoted spans** removed; the document cannot be quoted |
+| `lky_1970-08-16_river-valley-national-day-SUMMARY` | a summary, not a transcript; retrievable but not quotable |
 
 ---
 
-## Stack, and what is deliberately absent
+## The gates
 
-Python 3.11+, `openai`, `numpy`, `pydantic`, `pytest`, `PyYAML`, `python-dotenv`.
+The model proposes; the gates dispose. They are pure functions in
+[src/gates.py](src/gates.py), tested with no API key. On failure the exact failure
+list and the model's own previous answer go back to it, at most twice.
 
-**No LangChain, no Chroma, no sentence-transformers, no RAGAS.** The corpus is a
-few hundred chunks. The entire index is one float32 matrix, retrieval is a single
-matrix-vector product, and the whole thing fits in a few hundred kilobytes of RAM.
-A vector database would add a service, a schema and an install to a problem that
-does not have them. RAGAS is absent for a different reason: every metric in this
-project is deterministic, because an evaluation scored by an LLM is exactly as
-fallible as the thing it is evaluating, and it is not reproducible.
+- **(a) Shape.** A JSON object with a non-empty answer and a legal mode, or nothing.
+- **(b) Citation subset.** Every cited `chunk_id` must be one that was retrieved.
+- **(c) Quote grounding.** Every quote must be a verbatim span of the chunk it
+  names, **25 words or fewer**, and drawn from a document that may be quoted at
+  all — not a summary, and not the 1965-12-14 parliament record.
+- **(d) Number grounding.** Every figure and year in the answer must appear in the
+  retrieved chunks, unless the mode is `extrapolation`.
+- **(e) Mode labelling.** Mode `extrapolation` requires the exact sentence
+  *"Hypothetical extrapolation, not something he said."*, and no other mode may
+  carry it. An answer drawing on a translated record must say so.
+- **(f) Abstention.** Below the calibrated similarity threshold the mode must be
+  `abstain`. Personal topics are answerable only from the record where he spoke
+  about them himself.
 
-Model names are read from `.env` (`OPENAI_MODEL`, `EMBED_MODEL`) and are not
-hardcoded anywhere in `src/`.
-
----
-
-## Data provenance
-
-**Source: speeches only, from the National Archives of Singapore, Archives Online.**
-
-No memoirs and no books. They are copyrighted works that cannot be redistributed,
-and their contents are not in this corpus. If you ask this chatbot something that
-only a memoir would answer, the honest response is an abstention, and
-`eval/adversarial.json` tests exactly that.
-
-### The corpus is not in this repository, on purpose
-
-The National Archives of Singapore FAQ states that unauthorised reproduction of
-Archives Online records is a copyright violation. So:
-
-- `data/raw/` and `data/processed/` are gitignored and are **never committed**.
-- `*.npy` embedding vectors are gitignored.
-- What *is* committed is [`data/manifest.json`](data/manifest.json): for each
-  speech, its `document_id`, title, date, `source_url`, `retrieved_at`, word
-  count, `sha256` of the cleaned text, and chunk count. Enough to verify and
-  rebuild the corpus, not enough to reconstruct it.
-- Quotes anywhere in this repository — sample conversations, eval output — are
-  **25 words or fewer and attributed to a document and date**.
-
-### Collection was manual, and here is why
-
-`nas.gov.sg` sits behind AWS WAF Bot Control. Every scripted request, including
-the request for `robots.txt` itself, returns an empty `HTTP 202` carrying
-`x-amzn-waf-action: challenge`:
-
-```
-HTTP/2 202
-server: CloudFront
-content-length: 0
-x-amzn-waf-action: challenge
-```
-
-Because `robots.txt` cannot be read, the site's crawl policy is unknowable.
-Fetching anyway, while defeating an explicit bot challenge, was not acceptable
-for this project, so **nothing here crawls the archive**. No browser user-agent
-spoofing, no headless-browser challenge solving. The full evidence, with the
-URLs tried and the timestamps, is in
-[`docs/collection-blocked.md`](docs/collection-blocked.md).
-
-Instead a human opens each record in a normal browser and saves the transcript to
-`data/raw/<document_id>.txt`. `src/collect.py` then verifies what was saved — it
-is an ingest-and-verify step, not a crawler. It refuses to build a manifest if any
-entry has an unfilled field, a duplicate id, a `source_url` off `nas.gov.sg`, a
-missing file, fewer than 300 words, or a transcript whose opening does not
-corroborate that the speaker is Lee Kuan Yew.
-
-### Rebuilding the corpus from this repo
-
-1. Open each `source_url` in [`data/manifest.json`](data/manifest.json) in a browser.
-2. Save each transcript to `data/raw/<document_id>.txt`, keeping the archive's own
-   header line at the top.
-3. Copy the metadata into [`config/sources.yaml`](config/sources.yaml).
-4. `make collect` — and compare the `sha256` it reports against the manifest's. A
-   mismatch means your text differs from the one these results were produced on.
+Three modes: `documented`, `extrapolation`, `abstain`.
 
 ---
 
-## Running it
+## Evaluation
 
-```bash
-cp .env.example .env     # then add OPENAI_API_KEY, OPENAI_MODEL, EMBED_MODEL
-make install
-make test                # 29 gate tests, no API key needed
+One real run, recorded in [eval/results.md](eval/results.md) with per-question
+detail in `eval/results.json`. Model `gpt-4.1-mini`, embeddings
+`text-embedding-3-small`, 147 chunks, abstention threshold **0.4938**.
 
-# with a corpus in data/raw/ and config/sources.yaml filled in:
-make collect             # verify + manifest
-make process             # chunk
-make embed               # vectors.npy
-make questions           # 12 synthetic eval questions
-make calibrate           # abstention threshold, from retrieval scores
-make eval                # the real run -> eval/results.md
+**24 questions, reported separately because they are not comparable:**
 
-make chat                # interactive
-./.venv/bin/python app/chat.py "What did you believe education was for?"
-```
+- **12 synthetic** — the model wrote each from a known gold chunk.
+- **6 assistant-written** — broad topic questions. These were never confirmed by a
+  human, and no gold documents were ever confirmed for them.
+- **6 unanswerable or adversarial** — an event after 2015, something only a memoir
+  holds, personal trivia, a request to fabricate a quote, a prompt injection, and
+  a question outside politics.
 
-`make check` is a pre-commit guard: it fails if corpus text, vectors or `.env`
-are staged, or if a key-shaped string appears in the staged diff.
+| Metric | Value |
+|---|---|
+| Retrieval hit@5, all gold-labelled | **100.0%** over the 12 questions that have a gold label |
+| — synthetic | **100.0%** (n=12) |
+| — assistant-written | **n/a** (n=0 of 6 have gold labels) |
+| Citation validity | **100.0%** |
+| Quote grounding | **100.0%** of 34 quotes shipped |
+| Correct abstention, unanswerable set | **100.0%** |
+| Extrapolation labelling | **n/a** (0 extrapolations) |
+| Gate pass rate | **87.5%** |
+| First-attempt pass rate | **37.5%** |
 
----
+Passed only after a retry: **12**. Never passed within 2 retries: **3**. API errors
+during the run: **2**.
 
-## Eval results
+Three caveats belong next to those numbers. The synthetic questions are easier by
+construction, because the question was written from the passage that should be
+retrieved — 100.0% there is an upper bound, not an estimate. The threshold 0.4938
+was tuned on these same 24 questions, with no held-out split, so the abstention
+rate is optimistic. And citation validity and quote grounding are close to
+tautological on answers that passed, since the same checks are enforced as gates
+during generation; the first-attempt pass rate is the figure that says something
+about the raw model.
 
-See **[eval/results.md](eval/results.md)**, generated by `eval/run_eval.py` from
-one real run. It is not written unless the run completes.
-
-24 questions: 12 synthetic (written by the model from a known gold chunk, flagged
-as such because they are easier by construction), 6 hand-written broad topic
-questions with confirmed gold documents, and 6 unanswerable or adversarial —
-an event after 2015, something only a memoir holds, personal trivia, a request to
-fabricate a quote, a prompt injection, and a question outside politics entirely.
-
-Deterministic metrics only: retrieval hit@5 against gold, citation validity,
-quote grounding, correct abstention on the unanswerable set, correct labelling of
-extrapolations, and first-attempt pass rate against pass-after-retry. No LLM
-judge. The biases — small n, easier synthetic questions, and a threshold tuned on
-the same set it is scored on — are stated in `eval/results.md` next to the numbers
-they qualify.
+Sample transcripts from a separate real run are in
+[docs/sample_conversations.md](docs/sample_conversations.md).
 
 ---
 
 ## What went wrong
 
-Facts from the run logs.
-
-1. **The archive could not be crawled at all.** The first real action of the
-   project was a request for `nas.gov.sg/robots.txt`, and it came back empty with
-   `x-amzn-waf-action: challenge`. Every subsequent URL did the same. This
-   invalidated the planned `collect.py` entirely and the script was rewritten as
-   an ingest-and-verify step over manually saved files. Evidence:
-   [`docs/collection-blocked.md`](docs/collection-blocked.md).
-
-*(Further entries are added from `logs/` and `eval/results.json` after the eval run.)*
+TODO(author): to be written in the author's own words.
 
 ---
 
-## Limitations
+## Known limitations
 
-- **No memoirs, no books.** Speeches only. Anything he wrote rather than said is
-  outside this system, and questions about it are abstentions by design.
-- **The corpus is not redistributed.** Copyright. You can verify it by hash and
-  rebuild it from the manifest, but you cannot download it from here.
-- **12–15 speeches.** A few hundred chunks against a man who spoke publicly for
-  more than fifty years. Whole decades, audiences and topics are absent, and the
-  system cannot tell you that something is missing — only that it did not retrieve it.
-- **English only.** He spoke in Malay and Hokkien too. None of that is here.
-- **Persona fidelity is not measured.** Nothing in the eval tests whether the
-  voice actually resembles his. The gates check that quotes are real; they say
-  nothing about whether the prose around them sounds like the man.
-- **The eval is small and partly synthetic.** n=24, half of it written by the same
-  model family being tested, from the passages it is then asked to retrieve.
-- **The abstention threshold is tuned on the eval set.** There was no honest way
-  to hold out a split at this n, so the abstention numbers are optimistic.
-- **Retrieval is the ceiling.** The gates can only verify against what was
-  retrieved. If the right passage is not in the top 5, a confident, fully
-  "grounded", correctly cited and completely unhelpful answer is still possible.
+- **The parliament record loses most of its words and cannot be quoted.**
+  `lky_1965-12-14_parliament-motion-of-thanks` goes from 9,595 words to 2,819 —
+  about 71% removed — because the extracts Lee read aloud from other publications
+  could not be separated from his own speech reliably. The document is still
+  retrieved, and the separation question retrieves it, but nothing in it can be
+  quoted.
+- **The threshold suppresses answerable questions.** `hand-01` (similarity 0.437)
+  and `hand-06` (0.434) both fall below 0.4938 and abstain.
+- **The 25-word quote limit is the dominant failure mode.** First-attempt pass
+  rate is 37.5%, and 37 of the 40 first-attempt gate failures were quote failures
+  (`eval/results.json`). The model shaves a word at a time instead of obeying.
+- **Three of 24 never passed within the retry budget**, and the eval run recorded
+  **2 API errors**: two `JSONDecodeError` on `hand-05`, from a response of roughly
+  49 KB (`eval/results.json`).
+- **There is no human-written evaluation set.** All 24 questions were written by
+  the assistant or fixed in advance, none were confirmed by a human, and no gold
+  documents were confirmed for the 6 assistant-written questions. Hit@5 for them
+  is therefore `n/a`, not zero.
+- **Persona fidelity is not measured.** Nothing tests whether the voice resembles
+  his. The gates check that quotes are real; they say nothing about the prose
+  around them.
+- **Speeches only, English only, 17 documents.** No memoirs or books, which are
+  copyrighted and cannot be redistributed. He also spoke in Malay and Hokkien;
+  only two translated records are here.
+- **Retrieval is the ceiling.** The gates verify only against what was retrieved.
+  If the right passage is not in the top 5, a confident, correctly cited and
+  completely unhelpful answer is still possible.
 
 ---
 
 ## What I would change
 
-- **Hold out a calibration split.** The threshold being tuned on the eval set is
-  the weakest claim in this repo. Fixing it needs roughly 60–100 questions, which
-  needs a bigger corpus first.
-- **Measure persona fidelity properly**, with a human rubric on a blind mix of
-  real excerpts and generated answers. It is the one quality claim here with no
-  evidence behind it.
-- **Retrieve more than one way.** Pure dense cosine misses exact terms — a
-  statute name, a year, a place. BM25 alongside the embeddings, fused, would
-  likely move the hand-written hit@5 more than any prompt change.
-- **Write the hand-written eval questions before looking at the corpus**, to stop
-  the test set drifting towards what the corpus happens to contain.
-- **Ask the Archives for permission** rather than working around the absence of
-  it. A licensed corpus would make the whole data-provenance section shorter and
-  the project reproducible by anyone.
+- **Fix the parliament document properly**, with hand-marked extract boundaries
+  rather than quote-character pairing. It is the single largest document in the
+  corpus and currently contributes the least.
+- **Hold out a calibration split.** The threshold being tuned on the same 24
+  questions it is scored on is the weakest claim here. That needs a larger
+  question set, which needs a larger corpus first.
+- **Write a human evaluation set**, before looking at the corpus, so the test does
+  not drift towards what the corpus happens to contain, and confirm gold documents
+  so the honest hit@5 number exists at all.
+- **Enforce the quote limit by construction** — have the model return character
+  offsets into a chunk instead of copied text, so a quote cannot be the wrong
+  length or a paraphrase.
+- **Retrieve more than one way.** Dense cosine alone misses exact terms. BM25
+  fused with the embeddings would likely help more than any prompt change.
+- **Ask the Archives for permission** rather than working around its absence.
 
 ---
 
 ## Repository layout
 
 ```
-config/sources.yaml     speech metadata you fill in; collect.py validates it
-config/threshold.json   calibrated abstention threshold (written by src/calibrate.py)
-data/manifest.json      committed provenance: ids, urls, dates, hashes, chunk counts
-prompts/persona.md      the persona prompt, with a version history block
-src/collect.py          ingest + verify (NOT a crawler)
-src/process.py          paragraph chunking with overlap
-src/embed.py            embeddings + the numpy cosine index
-src/rag.py              retrieve → generate → gate → retry
-src/gates.py            the five deterministic gates
-src/calibrate.py        threshold from retrieval scores on the eval set
-src/textutil.py         normalisation, quote grounding, number grounding
+config/sources.yaml     per-document metadata and handling flags
+config/threshold.json   calibrated abstention threshold
+data/manifest.json      committed provenance: ids, dates, counts, sha256
+prompts/persona.md      persona prompt, with a version history block
+src/process.py          cleaning, speaker filtering, chunking (no LLM)
+src/embed.py            embeddings and the numpy cosine index
+src/rag.py              retrieve -> generate -> gate -> retry
+src/gates.py            the deterministic gates
+src/calibrate.py        threshold from retrieval scores
 app/chat.py             CLI chat with sources and run logging
-eval/                   questions, the runner, and results from real runs
-tests/                  gate tests, runnable with no API key
-docs/                   sample conversations from real runs
+eval/                   questions, runner, and results from real runs
+tests/                  gate and corpus tests, no API key needed
+docs/                   sample conversations, collection evidence
 logs/                   run logs with prompt hashes and model names
 ```
