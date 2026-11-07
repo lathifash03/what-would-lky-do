@@ -24,6 +24,10 @@ from src.gates import EXTRAPOLATION_LABEL, check_citations, check_quotes
 from src.rag import answer_question, load_threshold, log_turn
 from src.textutil import fold
 
+LEGACY_ID_NOTE = (
+    '> **Note:** the IDs `hand-01` to `hand-06` and the key `handwritten` are legacy names. These six questions were written by the assistant (Claude Code), not by a human, and their gold documents were never human-confirmed. They are not a human-written evaluation set.'
+)
+
 QUESTIONS = ROOT / "eval" / "questions.json"
 RESULTS_JSON = ROOT / "eval" / "results.json"
 RESULTS_MD = ROOT / "eval" / "results.md"
@@ -156,6 +160,8 @@ def write_markdown(report: dict) -> None:
     composition = ", ".join(f"{v} {k}" for k, v in sorted(counts.items()))
 
     lines = [
+        LEGACY_ID_NOTE,
+        "",
         "# Eval results",
         "",
         f"One real run, {report['run_at_utc']}. Every number below was produced by",

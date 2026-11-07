@@ -1,3 +1,5 @@
+> **Note:** the IDs `hand-01` to `hand-06` and the key `handwritten` are legacy names. These six questions were written by the assistant (Claude Code), not by a human, and their gold documents were never human-confirmed. They are not a human-written evaluation set.
+
 # Eval results
 
 One real run, 2026-11-07T08:17:03+00:00. Every number below was produced by

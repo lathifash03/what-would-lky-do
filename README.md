@@ -124,12 +124,16 @@ list and the model's own previous answer go back to it, at most twice.
   retrieved chunks, unless the mode is `extrapolation`.
 - **(e) Mode labelling.** Mode `extrapolation` requires the exact sentence
   *"Hypothetical extrapolation, not something he said."*, and no other mode may
-  carry it. An answer drawing on a translated record must say so.
+  carry it. An answer drawing on a translated record must say so. The
+  extrapolation half of this gate is **implemented, not yet demonstrated end to
+  end** — nothing in the eval run or the sample conversations has taken that path.
 - **(f) Abstention.** Below the calibrated similarity threshold the mode must be
   `abstain`. Personal topics are answerable only from the record where he spoke
   about them himself.
 
-Three modes: `documented`, `extrapolation`, `abstain`.
+Three modes: `documented`, `extrapolation`, `abstain`. Only `documented` and
+`abstain` have been observed; `extrapolation` is **implemented, not yet
+demonstrated end to end**. See Known limitations.
 
 ---
 
@@ -143,7 +147,10 @@ detail in `eval/results.json`. Model `gpt-4.1-mini`, embeddings
 
 - **12 synthetic** — the model wrote each from a known gold chunk.
 - **6 assistant-written** — broad topic questions. These were never confirmed by a
-  human, and no gold documents were ever confirmed for them.
+  human, and no gold documents were ever confirmed for them. `eval/results.md`
+  and `eval/questions.json` still use the legacy IDs `hand-01`…`hand-06` and the
+  legacy key `handwritten`; the names are historical and do not mean a human
+  wrote them.
 - **6 unanswerable or adversarial** — an event after 2015, something only a memoir
   holds, personal trivia, a request to fabricate a quote, a prompt injection, and
   a question outside politics.
@@ -156,7 +163,7 @@ detail in `eval/results.json`. Model `gpt-4.1-mini`, embeddings
 | Citation validity | **100.0%** |
 | Quote grounding | **100.0%** of 34 quotes shipped |
 | Correct abstention, unanswerable set | **100.0%** |
-| Extrapolation labelling | **n/a** (0 extrapolations) |
+| Extrapolation labelling | **n/a** — 0 extrapolations, so the path is implemented, not yet demonstrated end to end |
 | Gate pass rate | **87.5%** |
 | First-attempt pass rate | **37.5%** |
 
@@ -193,6 +200,13 @@ TODO(author): to be written in the author's own words.
   quoted.
 - **The threshold suppresses answerable questions.** `hand-01` (similarity 0.437)
   and `hand-06` (0.434) both fall below 0.4938 and abstain.
+- **The extrapolation path is implemented, not yet demonstrated end to end.** The
+  mode exists in `prompts/persona.md` and gate (e) enforces its exact label, but
+  it has never fired: **0 extrapolations across the 24 eval questions**, and in
+  sample conversation (c), on housing prices today, the model chose `abstain`
+  even though the similarity of 0.507 was above the 0.4938 threshold, so nothing
+  forced that choice. Extrapolation labelling is reported `n/a` for want of a
+  single case to measure.
 - **The 25-word quote limit is the dominant failure mode.** First-attempt pass
   rate is 37.5%, and 37 of the 40 first-attempt gate failures were quote failures
   (`eval/results.json`). The model shaves a word at a time instead of obeying.
@@ -202,7 +216,8 @@ TODO(author): to be written in the author's own words.
 - **There is no human-written evaluation set.** All 24 questions were written by
   the assistant or fixed in advance, none were confirmed by a human, and no gold
   documents were confirmed for the 6 assistant-written questions. Hit@5 for them
-  is therefore `n/a`, not zero.
+  is therefore `n/a`, not zero. Their legacy IDs `hand-01`…`hand-06` in
+  `eval/results.md` are a naming artefact, not evidence of human authorship.
 - **Persona fidelity is not measured.** Nothing tests whether the voice resembles
   his. The gates check that quotes are real; they say nothing about the prose
   around them.
