@@ -1,0 +1,32 @@
+# Corpus manifest input — FILL THIS IN YOURSELF.
+#
+# nas.gov.sg is behind AWS WAF Bot Control (see logs/collect_blocked_2026-11-07.md),
+# so this project does not crawl it. You open each speech in your normal browser,
+# copy the transcript text, and save it to data/raw/<document_id>.txt
+# (data/raw/ is gitignored and is never committed — NAS Archives Online records
+# are copyright-protected).
+#
+# Then record the real metadata here. src/collect.py verifies every entry against
+# the file on disk and refuses to build a manifest from placeholders.
+#
+# RULES
+#   document_id : <yyyymmdd>-<short-slug>, lowercase, no spaces. Must be unique.
+#                 Use the speech date. If only the year is known, use <yyyy>0000-<slug>.
+#   date        : ISO date as printed on the record. YYYY-MM-DD, or YYYY if that is all it gives.
+#   source_url  : the exact Archives Online record URL you opened. No guessing.
+#   speaker     : must contain "Lee Kuan Yew". collect.py checks this and
+#                 checks the raw text too. Do not add a record by another speaker.
+#   topic       : one of economy, education, leadership, foreign_policy,
+#                 language_policy, national_service, housing, governance, society
+#
+# Aim for 12-15 speeches spread across decades (1950s-2000s) and across topics.
+# Delete any entry you do not fill. Add more by copying the block.
+
+speeches:
+  - document_id: ""
+    title: ""
+    date: ""
+    source_url: ""
+    speaker: "Lee Kuan Yew"
+    topic: ""
+    note: ""

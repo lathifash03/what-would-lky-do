@@ -1,0 +1,13 @@
+[
+  {
+    "id": "hand-01",
+    "question": "",
+    "answerable": true,
+    "kind": "handwritten",
+    "acceptable_modes": ["documented"],
+    "gold_document_ids": [],
+    "gold_chunk_ids": [],
+    "confirmed": false,
+    "note": "Fill question and gold_document_ids from your own corpus, then set confirmed true. Broad topic questions, not passage-level ones."
+  }
+]

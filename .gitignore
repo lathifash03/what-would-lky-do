@@ -1,0 +1,19 @@
+# Secrets
+.env
+.env.local
+*.key
+
+# Corpus — NOT committed (National Archives of Singapore copyright)
+data/raw/
+data/processed/
+*.npy
+
+# Runtime
+logs/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+.omc/
