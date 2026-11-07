@@ -405,7 +405,11 @@ class DocResult:
     word_count_processed: int
     n_chunks: int
     sha256_raw: str
+    answer_use: bool = True
+    n_chunks_built: int = 0
     lines_dropped: int = 0
+    excluded_spans_removed: int = 0
+    words_removed_excluded: int = 0
     words_removed_speaker: int = 0
     words_removed_quotations: int = 0
     quotation_spans_removed: int = 0
@@ -424,13 +428,56 @@ class DocResult:
             "word_count_raw": self.word_count_raw,
             "word_count_processed": self.word_count_processed,
             "n_chunks": self.n_chunks,
+            "n_chunks_built": self.n_chunks_built,
+            "answer_use": self.answer_use,
             "sha256_raw": self.sha256_raw,
             "url": self.url,
             "lines_dropped": self.lines_dropped,
             "words_removed_speaker": self.words_removed_speaker,
             "words_removed_quotations": self.words_removed_quotations,
             "quotation_spans_removed": self.quotation_spans_removed,
+            "excluded_spans_removed": self.excluded_spans_removed,
+            "words_removed_excluded": self.words_removed_excluded,
         }
+
+
+def _flexible(marker: str) -> re.Pattern:
+    """Marker matcher tolerant of the line wrapping in the raw transcripts.
+
+    The raw files are hard-wrapped, so a marker phrase routinely straddles a
+    newline. Matching on literal text would miss exactly the spans that matter.
+    """
+    return re.compile(r"\s+".join(re.escape(w) for w in marker.split()), re.I)
+
+
+def apply_exclude_spans(text: str, spans: list[dict]) -> tuple[str, int, int]:
+    """Cut hand-identified third-party blocks out, begin marker to end marker.
+
+    These are passages that are verbatim in the archive and verbatim in the
+    chunk, and still not Lee's words: a letter somebody sent him, a magazine
+    article he read aloud. The quote gate cannot tell them apart from his own
+    speech, because by every mechanical test they *are* part of the record. So
+    they are removed by hand-written markers in config/sources.yaml, and the
+    tests assert they stay out.
+
+    Markers are matched case-insensitively with flexible whitespace. A span
+    whose begin or end marker is not found raises, rather than silently leaving
+    third-party text in the corpus.
+    """
+    removed_spans = removed_words = 0
+    for span in spans or []:
+        begin, end = span["begin"], span["end"]
+        mb = _flexible(begin).search(text)
+        if mb is None:
+            raise ProcessError(f"exclude_spans: begin marker not found: {begin!r}")
+        me = _flexible(end).search(text, mb.end())
+        if me is None:
+            raise ProcessError(f"exclude_spans: end marker not found after begin: {end!r}")
+        cut = text[mb.start():me.end()]
+        removed_words += word_count(cut)
+        removed_spans += 1
+        text = text[:mb.start()] + " " + text[me.end():]
+    return text, removed_spans, removed_words
 
 
 def process_document(entry: dict) -> DocResult:
@@ -448,6 +495,12 @@ def process_document(entry: dict) -> DocResult:
     text, lines_dropped = drop_furniture(text)
     text, heading_lines = strip_heading_block(text)
     lines_dropped += heading_lines
+
+    answer_use = bool(entry.get("answer_use", True))
+    excluded_spans, words_excluded = 0, 0
+    if entry.get("exclude_spans"):
+        text, excluded_spans, words_excluded = apply_exclude_spans(
+            text, entry["exclude_spans"])
 
     words_speaker = 0
     if entry.get("speaker_filter"):
@@ -487,6 +540,7 @@ def process_document(entry: dict) -> DocResult:
             "third_party_quotes": bool(entry["third_party_quotes"]),
             # Derived, and the only flag the quote gate reads. See
             # quotable_chunks() for why third_party_quotes also disqualifies.
+            "answer_use": answer_use,
             "quotable": bool(entry["verbatim"])
             and not bool(entry["third_party_quotes"]),
             "chunk_index": i,
@@ -507,9 +561,13 @@ def process_document(entry: dict) -> DocResult:
         url=entry["url"],
         word_count_raw=words_raw,
         word_count_processed=word_count(text),
-        n_chunks=len(chunks),
+        n_chunks=len(chunks) if answer_use else 0,
+        n_chunks_built=len(chunks),
+        answer_use=answer_use,
         sha256_raw=sha,
         lines_dropped=lines_dropped,
+        excluded_spans_removed=excluded_spans,
+        words_removed_excluded=words_excluded,
         words_removed_speaker=words_speaker,
         words_removed_quotations=words_quotes,
         quotation_spans_removed=spans,
@@ -528,6 +586,8 @@ def build() -> dict:
 
     with CHUNKS_JSONL.open("w", encoding="utf-8") as fh:
         for r in results:
+            if not r.answer_use:
+                continue          # kept in the manifest, kept out of the index
             for chunk in r.chunks:
                 fh.write(json.dumps(chunk, ensure_ascii=False) + "\n")
 
@@ -537,6 +597,8 @@ def build() -> dict:
                 "data/raw/ and data/processed/ are gitignored.",
         "n_documents": len(results),
         "n_chunks": sum(r.n_chunks for r in results),
+        "n_chunks_built": sum(r.n_chunks_built for r in results),
+        "n_documents_not_answerable": sum(1 for r in results if not r.answer_use),
         "word_count_raw": sum(r.word_count_raw for r in results),
         "word_count_processed": sum(r.word_count_processed for r in results),
         "chunking": {"target_words": TARGET_WORDS,

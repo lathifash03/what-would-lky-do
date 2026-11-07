@@ -34,6 +34,15 @@ documents:
     speaker_filter: null
 
   - document_id: lky_1965-11-08_everton-park-housing-opening
+    # Three extracts Lee read aloud from a Reader's Digest article by
+    # Francis Vivien Drake, November 1965. Drake's words, not his.
+    exclude_spans:
+      - begin: "Vietnam is the key to the safety"
+        end: "expulsion of the United States."
+      - begin: "Even more critical, however, is the fact"
+        end: "600 miles long"
+      - begin: "60 miles wide at this narrowest point"
+        end: "ships drop anchor in Singapore"
     title: "Speech at the opening ceremony of Everton Park Housing Estate"
     date: 1965-11-08
     type: speech
@@ -54,6 +63,12 @@ documents:
     speaker_filter: null
 
   - document_id: lky_1965-12-14_parliament-motion-of-thanks
+    # About two thirds of this sitting is Lee reading extracts from Barisan
+    # Sosialis publications and C. P. Fitzgerald into the record. The extract
+    # boundaries could not be recovered reliably (the source's quotation marks
+    # are unbalanced), so the document is kept in the manifest for transparency
+    # and kept out of the answering index entirely.
+    answer_use: false
     title: "Speech moving the Motion of Thanks to the Yang di-Pertuan Negara on the opening of Parliament"
     date: 1965-12-14
     type: parliament
@@ -129,6 +144,10 @@ documents:
     speaker_filter: null
 
   - document_id: lky_2005-04-28_ethical-leadership-kl
+    # Teh Cheang Wan's suicide letter. Verbatim in the archive, and not Lee's words.
+    exclude_spans:
+      - begin: "I have been feeling very sad and depressed"
+        end: "Teh Cheang Wan"
     title: "Address at the Asian Strategy and Leadership Institute's World Ethics and Integrity Forum 2005, Kuala Lumpur"
     date: 2005-04-28
     type: speech

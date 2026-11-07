@@ -104,11 +104,17 @@ def test_no_speaker_turn_labels_survive_in_parliament(chunks):
     assert offenders == [], f"Speaker turns survived in {offenders}"
 
 
-def test_lees_vocative_to_the_speaker_is_kept(chunks):
+def test_lees_vocative_to_the_speaker_is_kept():
     """The opposite failure: stripping every "Mr. Speaker" would delete Lee's
-    own words."""
-    doc_text = " ".join(c["text"] for c in _doc(chunks, PARLIAMENT))
-    assert "Mr. Speaker, Sir" in doc_text
+    own words.
+
+    Run 2 took the parliament record out of the answering index (answer_use:
+    false), so this is asserted against the document as processed rather than
+    against the chunks, which no longer contain it.
+    """
+    from src.process import PROCESSED
+    text = (PROCESSED / f"{PARLIAMENT}.txt").read_text(encoding="utf-8")
+    assert "Mr. Speaker, Sir" in text
 
 
 def test_no_long_quoted_span_survives_in_parliament(chunks):
@@ -232,9 +238,16 @@ def test_manifest_contains_no_corpus_text(manifest):
         assert f'"{chunk_field}":' not in blob
 
 
-def test_every_manifest_url_is_null(manifest):
-    """URLs are filled in by hand. Nothing here invents one."""
-    assert all(d["url"] is None for d in manifest["documents"])
+def test_every_manifest_url_is_on_nas_or_null(manifest):
+    """URLs are filled in by hand. Nothing here invents one.
+
+    Run 2 carries the URLs the author entered in config/sources.yaml. The test
+    no longer requires null, but still refuses a URL off nas.gov.sg, which is
+    the only place this corpus came from.
+    """
+    for d in manifest["documents"]:
+        url = d["url"]
+        assert url is None or url.startswith("https://www.nas.gov.sg/"), d["document_id"]
 
 
 def test_every_document_has_a_raw_sha256(manifest):
@@ -281,11 +294,16 @@ def test_every_quotable_chunk_is_verbatim_and_first_party():
         assert c["third_party_quotes"] is False
 
 
-def test_non_quotable_documents_are_still_retrievable(chunks):
-    """Excluded from quoting, not from the index."""
+def test_non_quotable_summary_is_still_retrievable(chunks):
+    """Cite-only, not excluded from the index.
+
+    The 1970 summary stays retrievable and unquotable. The parliament record is
+    a separate case in run 2: it is out of the index altogether, which
+    tests/test_run2.py asserts.
+    """
     ids = {c["document_id"] for c in chunks}
     assert SUMMARY_DOC in ids
-    assert PARLIAMENT in ids
+    assert PARLIAMENT not in ids
 
 
 # --- chunking -----------------------------------------------------------------
