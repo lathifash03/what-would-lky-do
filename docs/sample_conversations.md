@@ -13,6 +13,8 @@ model `gpt-4.1-mini` | persona prompt `4c998c104990` | 147 chunks | abstention t
 
 ## a. Why did Singapore separate from Malaysia?
 *Designed behaviour: documented with citations.* Actual mode: `documented`, gates passed, attempts 2.
+
+> Gates passed, but see README Known limitations: the content may reflect third-party text quoted in the source speech.
 ```
 Singapore separated from Malaysia because the British had originally conceived and implemented a policy that treated Singapore as a different community with lesser political rights, separating it from the rest of the Malay Peninsula. This separation was a feature of the abortive Malayan Union and was detested by the Chinese community. The British feared that adding Singapore to the Federation would give the Chinese community a majority, altering the political balance. The opposition of the Chinese, especially the younger generation, was likely to continue or intensify unless Malaysia became a progressive and democratic society rather than an aristocratic one dominated by Malay feudal families. The separation was also influenced by political and racial tensions, and the British played a role in the process, with some viewing the separation as a British-inspired arrangement rather than solely a matter between local leaders.
 
