@@ -186,7 +186,22 @@ Sample transcripts from a separate real run are in
 
 ## What went wrong
 
-TODO(author): to be written in the author's own words.
+**1. The model could not keep to a word limit, even with a gate watching it.**
+37 of the 40 first-attempt gate failures were quote failures, and 25 of those were quotes over 25 words. The model trimmed one word at a time instead of obeying, so only 37.5% of answers passed on the first try and 3 of 24 never passed. The gate did its job, because nothing over the limit got through. The failure was the model's compliance. I saw the same thing in my Instagram pipeline, where the model miscounted its own words. What I would change: let the model pick sentence IDs and let code cut the quote.
+
+**2. The most relevant document cannot be quoted.**
+The 1965 Parliament speech lost 6,519 of its 9,595 words, because about half of it quotes Barisan Sosialis publications. Two cleaning designs failed on the real file before the third worked, and the third still removed more than it should have. All five hits for "Why did Singapore separate from Malaysia?" come from this document. The system can cite it but never quote it. I chose that over quoting text I could not be sure Lee said.
+
+**3. My abstain threshold was too strict and tuned on the same 24 questions.**
+At 0.4938 it refused two questions it should have answered (hand-01 and hand-06). With only six unanswerable questions, its perfect specificity means very little.
+
+**4. My evaluation is not independent.**
+The synthetic questions come from the same chunks they test, and the six other questions were written by the assistant, not by me. No gold documents were ever confirmed by a human. An early run also reported hit@5 as 0.0%, which was just missing labels, not a real result. I only caught it by reading the table.
+
+**5. I almost lost work by running two sessions on one repo.**
+I pasted a prompt into the wrong Claude Code session. It rebuilt a pipeline that was already committed and overwrote it. I found out by reading `git log` and `git status` before approving a checkout. Next time: one session per repo, and check git first.
+
+**Not yet shown:** the extrapolation mode exists in the code and prompt, but it never fired. 0 of 24 eval questions used it, and when I asked about housing prices today, the model chose to abstain.
 
 ---
 
