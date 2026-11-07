@@ -80,7 +80,7 @@ documents:
     title: "Summary of speech at the 5th National Day celebrations, River Valley constituency"
     date: 1970-08-16
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/data/pdfdoc/lky19700816.pdf
     translated: false
     # The record is headed "SUMMARY OF SPEECH", so these are not Lee's words in
     # his order. Retrievable, but excluded from the quote gate.
@@ -92,7 +92,7 @@ documents:
     title: "Speech at the commissioning ceremony at SAFTI"
     date: 1970-08-18
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/speeches/record-details/72729e9a-115d-11e3-83d5-0050568939ad
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -102,7 +102,7 @@ documents:
     title: "Speech at the 75th anniversary dinner of Chin Kang Huay Kuan"
     date: 1993-12-15
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/data/pdfdoc/lky19931215.pdf
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -112,7 +112,7 @@ documents:
     title: "Speech at the Singapore Kwangtung Hui Kuan 60th anniversary dinner"
     date: 1997-11-25
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/data/pdfdoc/1997112503.htm
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -122,7 +122,7 @@ documents:
     title: "Speech at the SCCCI Millennium Celebration Dinner"
     date: 1999-12-28
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/data/pdfdoc/1999122802.htm
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -132,7 +132,7 @@ documents:
     title: "Address at the Asian Strategy and Leadership Institute's World Ethics and Integrity Forum 2005, Kuala Lumpur"
     date: 2005-04-28
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/speeches/record-details/78ad7a52-115d-11e3-83d5-0050568939ad
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -142,7 +142,7 @@ documents:
     title: "Speech at the launch of the book Keeping My Mandarin Alive"
     date: 2005-06-02
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/speeches/record-details/7a80add8-115d-11e3-83d5-0050568939ad
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -152,7 +152,7 @@ documents:
     title: "Speech at Narayana Murthy's book launch of A Better India: A Better World"
     date: 2009-05-11
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/speeches/record-details/8023f350-115d-11e3-83d5-0050568939ad
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -162,7 +162,7 @@ documents:
     title: "Speech at the launch of the new Civil Aviation Authority of Singapore and the Changi Airport Group"
     date: 2009-07-01
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/speeches/record-details/803cbf8b-115d-11e3-83d5-0050568939ad
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -172,7 +172,7 @@ documents:
     title: "Remarks at the close of the Singapore leg of the Journey of the Youth Olympic Flame"
     date: 2010-08-13
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/data/pdfdoc/20100823002.htm
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -182,7 +182,7 @@ documents:
     title: "Interview with Seth Mydans of the New York Times and IHT"
     date: 2010-09-01
     type: interview
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/speeches/record-details/80e4563e-115d-11e3-83d5-0050568939ad
     translated: false
     verbatim: true
     third_party_quotes: false
@@ -193,7 +193,7 @@ documents:
     title: "Speech at Tanjong Pagar GRC Family Day 2011"
     date: 2011-04-23
     type: speech
-    url: null
+    url: https://www.nas.gov.sg/archivesonline/speeches/record-details/81253f71-115d-11e3-83d5-0050568939ad
     translated: false
     verbatim: true
     third_party_quotes: false
