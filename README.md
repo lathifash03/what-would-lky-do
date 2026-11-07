@@ -177,8 +177,12 @@ detail in `eval/results.json`. Model `gpt-4.1-mini`, embeddings
 | Never passed within 2 retries | 3 | 5 |
 | API errors | 2 | 2 |
 
-Run 1 is preserved in [eval/results_run1.md](eval/results_run1.md); run 2 is
-[eval/results.md](eval/results.md).
+Run 1 is preserved in [eval/results_run1.md](eval/results_run1.md), with its raw
+per-question output in [eval/results_run1.json](eval/results_run1.json); run 2 is
+[eval/results.md](eval/results.md). The 37-of-40 figure quoted below and in "What
+went wrong" can be recomputed from `eval/results_run1.json` by aggregating the
+first element of each row's `attempt_failures` by gate name; `eval/results.json`
+holds run 2 and no longer contains run 1's numbers.
 
 ### Held-out human-written set (n=8)
 
@@ -228,6 +232,10 @@ runs means single-digit differences between run 1 and run 2 carry no weight.
 
 Passed only after a retry: **12**. Never passed within 2 retries: **3**. API errors
 during the run: **2**.
+
+Limits 3 and 5 in `eval/results.md` were written before the human-written set
+existed; see [eval/results_human.md](eval/results_human.md) for the held-out
+result.
 
 Three caveats belong next to those numbers. The synthetic questions are easier by
 construction, because the question was written from the passage that should be
